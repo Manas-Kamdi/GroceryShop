@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - GroceryShop</title>
+    <style>
+        :root {
+            --bg: #f3faf9;
+            --text: #0b3f3a;
+            --brand: #0f766e;
+            --primary: #14b8a6;
+            --primary-strong: #0ea5a3;
+            --on-primary: #062a27;
+            --field: #ffffff;
+            --field-border: #c7e7e2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 48px auto;
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: var(--brand);
+            margin: 0 0 8px 0;
+        }
+
+        .page-header p {
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .messages {
+            margin-bottom: 24px;
+        }
+
+        .messages .success {
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .messages .error {
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .error-list {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 1px solid #fca5a5;
+        }
+
+        .error-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--field-border);
+            border-radius: 8px;
+            background: var(--field);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-input-container {
+            position: relative;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed var(--field-border);
+            border-radius: 8px;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: border-color 160ms ease, background-color 160ms ease;
+        }
+
+        .file-input:hover {
+            border-color: var(--primary);
+            background: #f0fdfa;
+        }
+
+        .file-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: var(--on-primary);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 160ms ease, transform 80ms ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-strong);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: transparent;
+            color: var(--primary);
+            text-decoration: none;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 160ms ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--on-primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .image-preview {
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 24px auto;
+                padding: 16px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'Navbar.html' %}
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Add New Product</h1>
+            <p>Add a new product to your grocery store</p>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if errors %}
+        <div class="error-list">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div>
+                <label for="name">Product Name *</label>
+                <input type="text" id="name" name="name" required placeholder="Enter product name"/>
+            </div>
+
+            <div>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" placeholder="Enter product description"></textarea>
+            </div>
+
+            <div>
+                <label for="price">Price (₹) *</label>
+                <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00"/>
+            </div>
+
+            <div>
+                <label for="category">Category *</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Meat">Meat</option>
+                    <option value="Grains">Grains</option>
+                    <option value="Spices">Spices</option>
+                    <option value="Bakery">Bakery</option>
+                    <option value="Pantry">Pantry</option>
+                    <option value="Seafood">Seafood</option>
+                    <option value="Beverages">Beverages</option>
+                    <option value="Washroom & Hygiene">Washroom & Hygiene</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="stock_quantity">Stock Quantity</label>
+                <input type="number" id="stock_quantity" name="stock_quantity" min="0" value="10" placeholder="10"/>
+            </div>
+
+            <div>
+                <label for="image">Product Image</label>
+                <input type="file" id="image" name="image" accept="image/*" class="file-input" onchange="previewImage(this)"/>
+                <div class="image-preview" id="imagePreview"></div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Add Product</button>
+                <a href="{% url 'products' %}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Product Preview">`;
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

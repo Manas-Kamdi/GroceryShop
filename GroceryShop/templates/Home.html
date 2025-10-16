@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryShop - Fresh Groceries Delivered</title>
+    <style>
+        :root {
+            --bg: #f3faf9;
+            --text: #0b3f3a;
+            --brand: #0f766e;
+            --primary: #14b8a6;
+            --primary-strong: #0ea5a3;
+            --on-primary: #062a27;
+            --field: #ffffff;
+            --field-border: #c7e7e2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--brand) 0%, var(--primary) 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            margin: 0 0 32px 0;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 16px 32px;
+            background: white;
+            color: var(--brand);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 160ms ease;
+            border: 2px solid white;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            padding: 16px 32px;
+            background: transparent;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 160ms ease;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--brand);
+            transform: translateY(-2px);
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 20px;
+            background: #e8f5e8;
+            margin: 16px auto;
+            border-radius: 8px;
+            max-width: 1100px;
+        }
+
+        .welcome-message h2 {
+            color: var(--brand);
+            margin: 0;
+        }
+
+        .features-section {
+            padding: 80px 0;
+            background: var(--field);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--brand);
+            margin: 0 0 16px 0;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            margin: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .feature-card {
+            background: var(--field);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--brand);
+            margin: 0 0 12px 0;
+        }
+
+        .feature-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .stats-section {
+            background: var(--brand);
+            color: white;
+            padding: 60px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 24px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .cta-section {
+            padding: 80px 0;
+            background: var(--bg);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--brand);
+            margin: 0 0 16px 0;
+        }
+
+        .cta-description {
+            font-size: 18px;
+            color: #6b7280;
+            margin: 0 0 32px 0;
+            line-height: 1.6;
+        }
+
+        .banner {
+            width: 100%;
+            margin: auto;
+            overflow: hidden;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+            background: #0f766e10;
+        }
+
+        .banner .banner-fluid {
+            display: block;
+            width: 100%;
+            height: 440px;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    {% load static %}
+    {% include 'Navbar.html' %}
+    
+    {% if welcome_message %}
+    <div class="welcome-message">
+        <h2>{{ welcome_message }}</h2>
+    </div>
+    {% endif %}
+    
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Fresh Groceries, Delivered to Your Door</h1>
+            <p class="hero-subtitle">Shop for the freshest fruits, vegetables, dairy, and more from the comfort of your home. Quality guaranteed, convenience delivered.</p>
+            <div class="hero-cta">
+                <a href="{% url 'products' %}" class="btn-primary">Shop Now</a>
+                <a href="{% url 'signup' %}" class="btn-secondary">Get Started</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="banner">
+        <img src="{% static 'banner.png' %}" class="banner-fluid" alt="Fresh Groceries Banner">
+    </div>
+
+    <div class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why Choose GroceryShop?</h2>
+                <p class="section-subtitle">We're committed to bringing you the best grocery shopping experience with quality products and exceptional service.</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🥬</div>
+                    <h3 class="feature-title">Fresh Products</h3>
+                    <p class="feature-description">We source the freshest fruits, vegetables, and groceries directly from trusted suppliers to ensure quality in every order.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h3 class="feature-title">Fast Delivery</h3>
+                    <p class="feature-description">Quick and reliable delivery service to your doorstep. Order today and get your groceries delivered within hours.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Best Prices</h3>
+                    <p class="feature-description">Competitive pricing on all products. Save money while getting quality groceries delivered to your home.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 class="feature-title">Quality Guarantee</h3>
+                    <p class="feature-description">100% satisfaction guarantee. If you're not happy with your order, we'll make it right.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Easy Shopping</h3>
+                    <p class="feature-description">Simple and intuitive online shopping experience. Browse, select, and order your groceries in minutes.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3 class="feature-title">Organic Options</h3>
+                    <p class="feature-description">Wide selection of organic and natural products for health-conscious customers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Products Available</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Customer Support</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Start Shopping?</h2>
+                <p class="cta-description">Join thousands of satisfied customers who trust GroceryShop for their daily grocery needs. Fresh products, great prices, and convenient delivery.</p>
+                <div class="hero-cta">
+                    <a href="{% url 'products' %}" class="btn-primary">Browse Products</a>
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'signup' %}" class="btn-secondary">Create Account</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
