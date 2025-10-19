@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Order - {{ order.order_number }}</title>
+  <style>
+    :root {
+      --bg: #f3faf9;
+      --text: #0b3f3a;
+      --brand: #0f766e;
+      --primary: #14b8a6;
+      --primary-strong: #0ea5a3;
+      --on-primary: #062a27;
+      --muted: #6b7280;
+      --field: #ffffff;
+      --field-border: #c7e7e2;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); }
+    .container { max-width: 1000px; margin: 48px auto; padding: 0 24px; }
+    .header { text-align: center; margin-bottom: 28px; }
+    .header h1 { margin: 0 0 8px 0; color: var(--brand); font-size: 28px; position: relative; }
+    .header h1::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -8px; width: 64px; height: 3px; background: linear-gradient(90deg, var(--primary), var(--primary-strong)); border-radius: 2px; }
+    .sub { color: var(--muted); display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .badge-status { background: #e0f2fe; color: #075985; }
+    .badge-paid { background: #dcfce7; color: #065f46; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.06); padding: 24px; }
+    .card + .card { margin-top: 16px; }
+
+    .stepper { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-items: start; }
+    .step { text-align: center; position: relative; padding: 8px; }
+    .dot { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto 8px auto; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; background: #e5e7eb; }
+    .label { font-size: 14px; font-weight: 600; color: #374151; }
+    .desc { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    .active .dot { background: var(--primary); }
+    .completed .dot { background: var(--success); }
+    .active .label { color: var(--brand); }
+    .completed .label { color: #059669; }
+
+    .bar { position: relative; height: 4px; background: #e5e7eb; border-radius: 999px; margin: 18px 0 24px; }
+    .bar-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0; background: linear-gradient(90deg, var(--success), var(--primary)); border-radius: inherit; transition: width 300ms ease; }
+
+    .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 8px; }
+    .meta-item { background: #f9fafb; border: 1px solid #eef2f7; border-radius: 10px; padding: 12px 14px; }
+    .meta-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .meta-value { font-size: 14px; font-weight: 600; color: var(--brand); }
+
+    .items { display: grid; gap: 12px; }
+    .item { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px; border: 1px solid #eef2f7; border-radius: 10px; background: #fafafa; }
+    .item-name { font-weight: 600; color: #111827; }
+    .item-sub { color: #6b7280; font-size: 12px; margin-top: 2px; }
+    .item-price { font-weight: 700; color: var(--brand); }
+
+    .eta { margin-top: 8px; font-size: 14px; color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 10px 12px; border-radius: 8px; display: inline-flex; gap: 8px; align-items: center; }
+    .copy { cursor: pointer; color: var(--primary-strong); text-decoration: underline; }
+
+    .actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .btn { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--field-border); background: #fff; color: var(--text); text-decoration: none; font-weight: 600; }
+    .btn-primary { background: var(--primary); color: var(--on-primary); border: none; }
+    .btn-primary:hover { background: var(--primary-strong); }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
+
+    @media (max-width: 640px) { .stepper { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  {% include 'Navbar.html' %}
+  <div class="container">
+    <div class="header">
+      <h1>Track Order</h1>
+      <div class="sub">
+        <span>Order <strong>#{{ order.order_number }}</strong> <span class="copy" onclick="copyOrderId('{{ order.order_number }}')">(copy)</span></span>
+        <span>•</span>
+        <span>₹{{ order.total_amount|floatformat:2 }}</span>
+        <span>•</span>
+        <span>{{ order.created_at|date:"M d, Y" }}</span>
+        <span>•</span>
+        <span class="badge badge-status">{{ order.get_order_status_display }}</span>
+        <span class="badge {% if order.payment_status == 'paid' %}badge-paid{% else %}badge-pending{% endif %}">Payment: {{ order.get_payment_status_display }}</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stepper">
+        {% for s in steps %}
+        <div class="step {% if forloop.counter0 < current_index %}completed{% elif forloop.counter0 == current_index %}active{% endif %}">
+          <div class="dot">{{ forloop.counter }}</div>
+          <div class="label">{{ s.label }}</div>
+          <div class="desc">{{ s.desc }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="bar">
+        <div class="bar-fill" data-current-index="{{ current_index }}" data-steps="{{ steps|length }}"></div>
+      </div>
+
+      <div class="meta">
+        <div class="meta-item">
+          <div class="meta-label">Current Status</div>
+          <div class="meta-value">{{ order.get_order_status_display }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Payment</div>
+          <div class="meta-value">{{ order.get_payment_status_display }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Dispatch To</div>
+          <div class="meta-value">{{ order.delivery_name }} • {{ order.delivery_phone }}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Delivery Address</div>
+          <div class="meta-value">{{ order.delivery_address }}, {{ order.delivery_area }}{% if order.delivery_landmark %}, {{ order.delivery_landmark }}{% endif %} - {{ order.delivery_pincode }}</div>
+        </div>
+      </div>
+
+      <div class="eta" id="etaBox" style="display:none">
+        <span>🕒</span>
+        <span id="etaText">Estimated delivery: —</span>
+      </div>
+
+      <div class="actions">
+        <a class="btn" href="{% url 'my_orders' %}">Back to Orders</a>
+        <a class="btn-primary" href="{% url 'products' %}">Continue Shopping</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 12px 0;color:var(--brand)">Order Items</h3>
+      <div class="items">
+        {% for it in order.orderitem_set.all %}
+        <div class="item">
+          <div>
+            <div class="item-name">{{ it.product.name }}</div>
+            <div class="item-sub">Qty: {{ it.quantity }} × ₹{{ it.price|floatformat:2 }}</div>
+          </div>
+          <div class="item-price">₹{{ it.total_price|floatformat:2 }}</div>
+        </div>
+        {% empty %}
+        <div class="item">
+          <div class="item-name">No items found</div>
+          <div class="item-price">₹0.00</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 12px 0;color:var(--brand)">Need help?</h3>
+      <div style="color:#4b5563;font-size:14px">If you have questions about your order, contact support at <strong>support@groceryshop.local</strong> or call <strong>+91-73870-29875</strong>.</div>
+    </div>
+  </div>
+
+  <script>
+    // Fill progress bar according to current step (computed entirely on client)
+    (function() {
+      const fill = document.querySelector('.bar-fill');
+      if (!fill) return;
+      const steps = parseInt(fill.getAttribute('data-steps') || '5', 10);
+      const current = parseInt(fill.getAttribute('data-current-index') || '0', 10);
+      const pct = Math.max(0, Math.min(100, (current / Math.max(1, steps - 1)) * 100));
+      fill.style.width = pct + '%';
+    })();
+
+    // Simple ETA heuristic based on status
+    (function() {
+      const status = '{{ order.order_status }}';
+      const etaBox = document.getElementById('etaBox');
+      const etaText = document.getElementById('etaText');
+      let msg = '';
+      if (status === 'pending' || status === 'confirmed') msg = '1-2 days';
+      else if (status === 'processing') msg = '1-2 days';
+      else if (status === 'shipped') msg = 'Today or tomorrow';
+      else if (status === 'delivered') msg = 'Delivered';
+      if (msg) {
+        etaText.textContent = 'Estimated delivery: ' + msg;
+        etaBox.style.display = 'inline-flex';
+      }
+    })();
+
+    function copyOrderId(orderId) {
+      try {
+        navigator.clipboard.writeText(orderId);
+      } catch(e) {}
+    }
+  </script>
+</body>
+</html>

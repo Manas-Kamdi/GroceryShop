@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - GroceryShop</title>
+    <style>
+        :root {
+            --bg: #f3faf9;
+            --text: #0b3f3a;
+            --brand: #0f766e;
+            --primary: #14b8a6;
+            --primary-strong: #0ea5a3;
+            --on-primary: #062a27;
+            --field: #ffffff;
+            --field-border: #c7e7e2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--brand) 0%, var(--primary) 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 20px;
+            margin: 0;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .content-section {
+            padding: 80px 0;
+            background: var(--field);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--brand);
+            margin: 0 0 16px 0;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            margin: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .about-content p {
+            margin-bottom: 24px;
+            color: #374151;
+        }
+
+        .mission-vision {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin: 48px 0;
+        }
+
+        .mission-card {
+            background: var(--field);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .mission-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .mission-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--brand);
+            margin: 0 0 16px 0;
+        }
+
+        .mission-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .values-section {
+            background: var(--bg);
+            padding: 80px 0;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .value-card {
+            background: var(--field);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .value-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .value-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--brand);
+            margin: 0 0 8px 0;
+        }
+
+        .value-description {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .team-section {
+            padding: 80px 0;
+            background: var(--field);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .team-member {
+            background: var(--field);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 auto 16px auto;
+        }
+
+        .member-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--brand);
+            margin: 0 0 8px 0;
+        }
+
+        .member-role {
+            color: var(--primary);
+            font-weight: 500;
+            margin: 0 0 12px 0;
+        }
+
+        .member-bio {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .stats-section {
+            background: var(--brand);
+            color: white;
+            padding: 60px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 24px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .cta-section {
+            padding: 80px 0;
+            background: var(--bg);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--brand);
+            margin: 0 0 16px 0;
+        }
+
+        .cta-description {
+            font-size: 18px;
+            color: #6b7280;
+            margin: 0 0 32px 0;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 16px 32px;
+            background: var(--primary);
+            color: var(--on-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 160ms ease;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-strong);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 36px;
+            }
+
+            .page-subtitle {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .mission-vision {
+                grid-template-columns: 1fr;
+            }
+
+            .values-grid,
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'Navbar.html' %}
+    
+    <div class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="page-title">About GroceryShop</h1>
+                <p class="page-subtitle">Your trusted partner for fresh groceries and exceptional service</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Story</h2>
+                <p class="section-subtitle">Building a better grocery shopping experience for everyone</p>
+            </div>
+            
+            <div class="about-content">
+                <p>Founded in 2024, GroceryShop began with a simple mission: to make grocery shopping convenient, affordable, and enjoyable for everyone. We recognized that traditional grocery shopping can be time-consuming and stressful, especially for busy families and working professionals.</p>
+                
+                <p>Our journey started when our founders experienced the frustration of spending hours in crowded supermarkets, dealing with long checkout lines, and struggling to find fresh, quality products. We knew there had to be a better way.</p>
+                
+                <p>Today, GroceryShop has grown into a trusted online grocery platform serving thousands of customers across the region. We've built strong relationships with local farmers, suppliers, and distributors to ensure we can offer the freshest products at competitive prices.</p>
+                
+                <p>Our commitment to quality, customer service, and innovation has made us a preferred choice for families who value their time and want the best for their loved ones. We continue to evolve and improve our services based on customer feedback and changing needs.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="container">
+            <div class="mission-vision">
+                <div class="mission-card">
+                    <div class="mission-icon">🎯</div>
+                    <h3 class="mission-title">Our Mission</h3>
+                    <p class="mission-description">To provide fresh, high-quality groceries at affordable prices while delivering exceptional customer service and convenience to every household.</p>
+                </div>
+                
+                <div class="mission-card">
+                    <div class="mission-icon">👁️</div>
+                    <h3 class="mission-title">Our Vision</h3>
+                    <p class="mission-description">To become the leading online grocery platform that transforms how people shop for food, making healthy eating accessible and convenient for everyone.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="values-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Values</h2>
+                <p class="section-subtitle">The principles that guide everything we do</p>
+            </div>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🌱</div>
+                    <h4 class="value-title">Quality First</h4>
+                    <p class="value-description">We never compromise on quality. Every product is carefully selected and inspected to meet our high standards.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h4 class="value-title">Customer Focus</h4>
+                    <p class="value-description">Our customers are at the heart of everything we do. We listen, learn, and continuously improve based on their needs.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">⚡</div>
+                    <h4 class="value-title">Innovation</h4>
+                    <p class="value-description">We embrace technology and innovation to make grocery shopping faster, easier, and more enjoyable.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🌍</div>
+                    <h4 class="value-title">Sustainability</h4>
+                    <p class="value-description">We're committed to sustainable practices and supporting local farmers and suppliers.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">🛡️</div>
+                    <h4 class="value-title">Trust & Transparency</h4>
+                    <p class="value-description">We build trust through transparency, honest pricing, and reliable service.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">👥</div>
+                    <h4 class="value-title">Community</h4>
+                    <p class="value-description">We believe in supporting our local community and building lasting relationships.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Meet Our Team</h2>
+                <p class="section-subtitle">The passionate people behind GroceryShop</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-avatar">MK</div>
+                    <h4 class="member-name">Manas Kamdi</h4>
+                    <p class="member-role">Founder & CEO</p>
+                    <p class="member-bio">Visionary leader with 15+ years in retail and technology, passionate about revolutionizing grocery shopping.</p>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-avatar">KK</div>
+                    <h4 class="member-name">Kalyani Kamdi</h4>
+                    <p class="member-role">Head of Operations</p>
+                    <p class="member-bio">Operations expert ensuring smooth logistics and supply chain management for our customers.</p>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-avatar">SY</div>
+                    <h4 class="member-name">Sujal Yeole</h4>
+                    <p class="member-role">Quality Assurance Manager</p>
+                    <p class="member-bio">Quality specialist with extensive experience in food safety and product standards.</p>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-avatar">TW</div>
+                    <h4 class="member-name">Tanmay Warthe</h4>
+                    <p class="member-role">Customer Success Manager</p>
+                    <p class="member-bio">Customer advocate dedicated to ensuring every customer has an exceptional experience.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Products Available</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Local Suppliers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Customer Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Join Our Community</h2>
+                <p class="cta-description">Be part of the GroceryShop family and experience the future of grocery shopping. Fresh products, great prices, and exceptional service await you.</p>
+                <a href="{% url 'products' %}" class="btn-primary">Start Shopping Today</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
