@@ -2,15 +2,24 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import Product
+from django.contrib.auth.decorators import login_required   # ✅ Added this import
 from django.core.files.storage import FileSystemStorage
+from .models import Product
 
-# Home Page
+
+# 🏠 Home Page
 def home(request):
     products = Product.objects.all()
     return render(request, "Home.html", {"products": products})
 
-# Signup Page
+
+# 👤 Dashboard (Protected Page)
+@login_required(login_url="login")   # ✅ Added login_url to redirect if not logged in
+def dashboard(request):
+    return render(request, "dashboard.html")
+
+
+# 📝 Signup Page
 def signup(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -38,7 +47,8 @@ def signup(request):
 
     return render(request, "Signup.html")
 
-# Login Page
+
+# 🔐 Login Page
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -55,13 +65,16 @@ def login_view(request):
 
     return render(request, "Login.html")
 
-# Logout
+
+# 🚪 Logout
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out.")
     return redirect("login")
 
-# Add Product
+
+# ➕ Add Product (Optional: Protect with login)
+@login_required(login_url="login")
 def add_product(request):
     if request.method == "POST" and request.FILES.get("image"):
         name = request.POST.get("name")
@@ -82,7 +95,9 @@ def add_product(request):
 
     return render(request, "AddProduct.html")
 
-# Delete Product
+
+# ❌ Delete Product
+@login_required(login_url="login")
 def delete_product(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
@@ -92,7 +107,9 @@ def delete_product(request, product_id):
         messages.error(request, "Product not found.")
     return redirect("home")
 
-# Edit Product
+
+# ✏️ Edit Product
+@login_required(login_url="login")
 def edit_product(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
