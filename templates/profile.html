@@ -442,25 +442,52 @@
                     return;
                 }
                 
-                // Validate file size (max 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Image size should be less than 5MB.');
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size should be less than 2MB.');
                     input.value = '';
                     return;
                 }
                 
-                const reader = new FileReader();
+                // Compress image if it's too large
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
                 
-                reader.onload = function(e) {
+                img.onload = function() {
+                    // Calculate new dimensions (max 400x400)
+                    let { width, height } = img;
+                    const maxSize = 400;
+                    
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = (height * maxSize) / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = (width * maxSize) / height;
+                            height = maxSize;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Draw and compress
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    // Update the image display
                     const profilePhoto = document.getElementById('profilePhoto');
                     const profilePhotoPlaceholder = document.getElementById('profilePhotoPlaceholder');
                     
                     if (profilePhoto) {
-                        profilePhoto.src = e.target.result;
+                        profilePhoto.src = compressedDataUrl;
                     } else {
                         // Create new image element if placeholder exists
                         const newImg = document.createElement('img');
-                        newImg.src = e.target.result;
+                        newImg.src = compressedDataUrl;
                         newImg.alt = 'Profile Photo';
                         newImg.className = 'profile-photo';
                         newImg.id = 'profilePhoto';
@@ -489,7 +516,9 @@
                     }
                 };
                 
-                reader.readAsDataURL(input.files[0]);
+                img.src = URL.createObjectURL(file);
+                
+                // The image processing is handled above
             }
         }
 

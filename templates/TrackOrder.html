@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - GroceryShop</title>
+    {% load static %}
+    <style>
+        :root {
+            --bg: #f3faf9;
+            --text: #0b3f3a;
+            --brand: #0f766e;
+            --primary: #14b8a6;
+            --primary-strong: #0ea5a3;
+            --on-primary: #062a27;
+            --field: #ffffff;
+            --field-border: #c7e7e2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 48px auto;
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
+        }
+
+        .order-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .order-title {
+            font-size: 28px;
+            color: var(--brand);
+            margin: 0 0 8px 0;
+        }
+
+        .order-number {
+            font-size: 18px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .tracking-section {
+            margin-bottom: 32px;
+        }
+
+        .tracking-title {
+            font-size: 20px;
+            color: var(--brand);
+            margin: 0 0 20px 0;
+        }
+
+        .tracking-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            background: var(--field);
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step.completed .step-icon {
+            background: var(--success);
+            color: white;
+        }
+
+        .step.current .step-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step.pending .step-icon {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .step-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .step.completed .step-label {
+            color: var(--success);
+        }
+
+        .step.current .step-label {
+            color: var(--primary);
+        }
+
+        .step.pending .step-label {
+            color: #6b7280;
+        }
+
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .order-details h3 {
+            margin: 0 0 16px 0;
+            color: var(--brand);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .detail-value {
+            color: var(--text);
+        }
+
+        .order-items {
+            margin-bottom: 24px;
+        }
+
+        .order-items h3 {
+            margin: 0 0 16px 0;
+            color: var(--brand);
+        }
+
+        .item-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--field);
+            border-radius: 6px;
+            border: 1px solid var(--field-border);
+        }
+
+        .item-name {
+            font-weight: 600;
+        }
+
+        .item-details {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: var(--on-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 160ms ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-strong);
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: transparent;
+            color: var(--brand);
+            text-decoration: none;
+            border: 2px solid var(--brand);
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 160ms ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--brand);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .tracking-steps {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .tracking-steps::before {
+                display: none;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'Navbar.html' %}
+    
+    <div class="container">
+        <div class="order-header">
+            <h1 class="order-title">Track Your Order</h1>
+            <p class="order-number">Order #{{ order.order_number }}</p>
+        </div>
+
+        {% if order %}
+            <div class="tracking-section">
+                <h3 class="tracking-title">Order Status</h3>
+                <div class="tracking-steps">
+                    <div class="step {% if order.order_status == 'pending' %}current{% elif order.order_status in 'confirmed,processing,shipped,delivered' %}completed{% else %}pending{% endif %}">
+                        <div class="step-icon">📋</div>
+                        <div class="step-label">Pending</div>
+                    </div>
+                    <div class="step {% if order.order_status == 'confirmed' %}current{% elif order.order_status in 'processing,shipped,delivered' %}completed{% else %}pending{% endif %}">
+                        <div class="step-icon">✅</div>
+                        <div class="step-label">Confirmed</div>
+                    </div>
+                    <div class="step {% if order.order_status == 'processing' %}current{% elif order.order_status in 'shipped,delivered' %}completed{% else %}pending{% endif %}">
+                        <div class="step-icon">🔄</div>
+                        <div class="step-label">Processing</div>
+                    </div>
+                    <div class="step {% if order.order_status == 'shipped' %}current{% elif order.order_status == 'delivered' %}completed{% else %}pending{% endif %}">
+                        <div class="step-icon">🚚</div>
+                        <div class="step-label">Shipped</div>
+                    </div>
+                    <div class="step {% if order.order_status == 'delivered' %}completed{% else %}pending{% endif %}">
+                        <div class="step-icon">📦</div>
+                        <div class="step-label">Delivered</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-details">
+                <h3>Order Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Order Number:</span>
+                    <span class="detail-value">{{ order.order_number }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Order Date:</span>
+                    <span class="detail-value">{{ order.created_at|date:"F d, Y g:i A" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Total Amount:</span>
+                    <span class="detail-value">₹{{ order.total_amount }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Payment Status:</span>
+                    <span class="detail-value">{{ order.get_payment_status_display }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Order Status:</span>
+                    <span class="detail-value">{{ order.get_order_status_display }}</span>
+                </div>
+            </div>
+
+            <div class="order-details">
+                <h3>Delivery Address</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{{ order.delivery_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value">{{ order.delivery_phone }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Address:</span>
+                    <span class="detail-value">{{ order.delivery_address }}, {{ order.delivery_area }}{% if order.delivery_landmark %}, {{ order.delivery_landmark }}{% endif %} - {{ order.delivery_pincode }}</span>
+                </div>
+            </div>
+
+            <div class="order-items">
+                <h3>Order Items</h3>
+                <div class="item-list">
+                    {% for item in order.orderitem_set.all %}
+                    <div class="item">
+                        <div>
+                            <div class="item-name">{{ item.product.name }}</div>
+                            <div class="item-details">Quantity: {{ item.quantity }} × ₹{{ item.price }}</div>
+                        </div>
+                        <div class="item-details">₹{{ item.total_price }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'my_orders' %}" class="btn-secondary">Back to Orders</a>
+                <a href="{% url 'products' %}" class="btn-primary">Continue Shopping</a>
+            </div>
+        {% else %}
+            <div class="order-details">
+                <h3>Order Not Found</h3>
+                <p>Sorry, we couldn't find the order you're looking for.</p>
+                <div class="actions">
+                    <a href="{% url 'my_orders' %}" class="btn-primary">View All Orders</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

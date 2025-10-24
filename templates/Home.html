@@ -305,13 +305,17 @@
             <p class="hero-subtitle">Shop for the freshest fruits, vegetables, dairy, and more from the comfort of your home. Quality guaranteed, convenience delivered.</p>
             <div class="hero-cta">
                 <a href="{% url 'products' %}" class="btn-primary">Shop Now</a>
-                <a href="{% url 'signup' %}" class="btn-secondary">Get Started</a>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'signup' %}" class="btn-secondary">Get Started</a>
+                {% else %}
+                    <a href="{% url 'dashboard' %}" class="btn-secondary">Dashboard</a>
+                {% endif %}
             </div>
         </div>
     </div>
 
     <div class="banner">
-        <img src="{% static 'banner.png' %}" class="banner-fluid" alt="Fresh Groceries Banner">
+        <img src="{% static 'images/banner.svg' %}" class="banner-fluid" alt="Fresh Groceries Banner">
     </div>
 
     <div class="features-section">

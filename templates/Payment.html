@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment - GroceryShop</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    {% load static %}
+    <script src="{% static 'js/dialog.js' %}"></script>
     <style>
         :root {
             --bg: #f3faf9;
@@ -346,12 +348,12 @@
                         <h3>Delivery Address</h3>
                         
                         <div class="form-row">
-                            <div class="form-group">
+            <div class="form-group">
                                 <label for="delivery_name">Full Name *</label>
                                 <input type="text" id="delivery_name" name="delivery_name" 
                                        value="{{ user.first_name }} {{ user.last_name }}" required>
-                            </div>
-                            <div class="form-group">
+            </div>
+            <div class="form-group">
                                 <label for="delivery_phone">Phone Number *</label>
                                 <input type="tel" id="delivery_phone" name="delivery_phone" 
                                        value="{{ user.profile.phone|default:'' }}" required>
@@ -398,7 +400,7 @@
                     </div>
 
                     <!-- Hidden fields for order data -->
-                    <input type="hidden" id="order_total" name="order_total" value="{{ cart.total_price }}">
+                    <input type="hidden" id="order_total" name="order_total" value="{{ total_price }}">
                     <input type="hidden" id="order_items" name="order_items" value="{{ cart_items|length }}">
                 </form>
             </div>
@@ -446,7 +448,7 @@
                 </div>
             </div>
         </div>
-    </div>
+            </div>
 
             <script>
         // Razorpay configuration
@@ -470,7 +472,7 @@
             }
             
             if (!paymentMethod) {
-                alert('Please select a payment method');
+                showWarning('Please select a payment method', 'Payment Method Required');
                 return;
             }
             
@@ -539,18 +541,18 @@
                     rzp.open();
                 } else {
                     loading.classList.remove('show');
-                    alert('Error creating payment order: ' + data.message);
+                    showError('Error creating payment order: ' + data.message, 'Payment Error');
                 }
             })
             .catch(error => {
                 loading.classList.remove('show');
                 console.error('Error:', error);
-                alert('Error processing payment. Please try again.');
+                showError('Error processing payment. Please try again.', 'Payment Error');
             });
         }
         
         function processCODPayment() {
-            if (confirm('Are you sure you want to place a Cash on Delivery order?')) {
+            showConfirm('Are you sure you want to place a Cash on Delivery order?', 'Confirm Order', () => {
                 const loading = document.getElementById('loading');
                 loading.classList.add('show');
                 
@@ -570,18 +572,18 @@
                 .then(data => {
                     loading.classList.remove('show');
                     if (data.success) {
-                        alert('Order placed successfully! Order ID: ' + data.order_number);
+                        showSuccess('Order placed successfully! Order ID: ' + data.order_number, 'Order Confirmed');
                         window.location.href = '{% url "profile" %}';
                     } else {
-                        alert('Error placing order: ' + data.message);
+                        showError('Error placing order: ' + data.message, 'Order Error');
                     }
                 })
                 .catch(error => {
                     loading.classList.remove('show');
                     console.error('Error:', error);
-                    alert('Error placing order. Please try again.');
+                    showError('Error placing order. Please try again.', 'Order Error');
                 });
-            }
+            });
         }
         
         function completePayment(response) {
@@ -606,16 +608,16 @@
             .then(data => {
                 loading.classList.remove('show');
                 if (data.success) {
-                    alert('Payment successful! Order ID: ' + data.order_number);
+                    showSuccess('Payment successful! Order ID: ' + data.order_number, 'Payment Successful');
                     window.location.href = '{% url "profile" %}';
                 } else {
-                    alert('Error processing payment: ' + data.message);
+                    showError('Error processing payment: ' + data.message, 'Payment Error');
                 }
             })
             .catch(error => {
                 loading.classList.remove('show');
                 console.error('Error:', error);
-                alert('Error processing payment. Please contact support.');
+                showError('Error processing payment. Please contact support.', 'Payment Error');
             });
         }
         

@@ -340,6 +340,8 @@
 </head>
 <body>
     {% include 'Navbar.html' %}
+    {% load static %}
+    <script src="{% static 'js/dialog.js' %}"></script>
     
     <div class="container">
         <div class="page-header">
@@ -476,7 +478,7 @@
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
             if (!csrfToken) {
                 console.error('CSRF token not found');
-                alert('Error: CSRF token not found. Please refresh the page.');
+                showError('Error: CSRF token not found. Please refresh the page.', 'Security Error');
                 return;
             }
             

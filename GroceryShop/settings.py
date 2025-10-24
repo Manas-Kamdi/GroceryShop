@@ -120,8 +120,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Additional directories where Django will look for static files during development
-# This points to the project's Assets folder so templates can load files via {% static %}
 STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'assets'),  # if your banner image is here
 ]
 

@@ -372,6 +372,8 @@
 </head>
 <body>
     {% include 'Navbar.html' %}
+    {% load static %}
+    <script src="{% static 'js/dialog.js' %}"></script>
     
     <div class="container">
         <div class="cart-header">
@@ -478,45 +480,45 @@
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
-                body: `cart_item_id=${itemId}&quantity=${quantity}`
+                body: `item_id=${itemId}&quantity=${quantity}`
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert(data.message);
+                    showError(data.message, 'Cart Error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while updating the cart');
+                showError('An error occurred while updating the cart', 'Cart Error');
             });
         }
 
         function removeItem(itemId) {
-            if (confirm('Are you sure you want to remove this item from your cart?')) {
+            showConfirm('Are you sure you want to remove this item from your cart?', 'Remove Item', () => {
                 fetch('{% url "remove_from_cart" %}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                     },
-                    body: `cart_item_id=${itemId}`
+                    body: `item_id=${itemId}`
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         location.reload();
                     } else {
-                        alert(data.message);
+                        showError(data.message, 'Cart Error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while removing the item');
+                    showError('An error occurred while removing the item', 'Cart Error');
                 });
-            }
+            });
         }
 
         function proceedToCheckout() {
