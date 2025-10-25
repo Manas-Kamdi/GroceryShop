@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -347,11 +348,80 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* ===== Enhanced Contact Section ===== */
+.contact-section {
+    background: linear-gradient(135deg, #00796b, #004d40);
+    color: #fff;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.section-header {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.section-subtitle {
+    font-size: 18px;
+    color: #ccece9;
+}
+
+.contact-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.contact-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 40px 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    backdrop-filter: blur(6px);
+}
+
+.contact-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.contact-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.contact-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.contact-detail {
+    font-size: 16px;
+    color: #e0f7fa;
+}
+
     </style>
 </head>
+
 <body>
     {% include 'Navbar.html' %}
-    
+
     <div class="page-header">
         <div class="container">
             <div class="page-header-content">
@@ -367,15 +437,23 @@
                 <h2 class="section-title">Our Story</h2>
                 <p class="section-subtitle">Building a better grocery shopping experience for everyone</p>
             </div>
-            
+
             <div class="about-content">
-                <p>Founded in 2024, GroceryShop began with a simple mission: to make grocery shopping convenient, affordable, and enjoyable for everyone. We recognized that traditional grocery shopping can be time-consuming and stressful, especially for busy families and working professionals.</p>
-                
-                <p>Our journey started when our founders experienced the frustration of spending hours in crowded supermarkets, dealing with long checkout lines, and struggling to find fresh, quality products. We knew there had to be a better way.</p>
-                
-                <p>Today, GroceryShop has grown into a trusted online grocery platform serving thousands of customers across the region. We've built strong relationships with local farmers, suppliers, and distributors to ensure we can offer the freshest products at competitive prices.</p>
-                
-                <p>Our commitment to quality, customer service, and innovation has made us a preferred choice for families who value their time and want the best for their loved ones. We continue to evolve and improve our services based on customer feedback and changing needs.</p>
+                <p>Founded in 2024, GroceryShop began with a simple mission: to make grocery shopping convenient,
+                    affordable, and enjoyable for everyone. We recognized that traditional grocery shopping can be
+                    time-consuming and stressful, especially for busy families and working professionals.</p>
+
+                <p>Our journey started when our founders experienced the frustration of spending hours in crowded
+                    supermarkets, dealing with long checkout lines, and struggling to find fresh, quality products. We
+                    knew there had to be a better way.</p>
+
+                <p>Today, GroceryShop has grown into a trusted online grocery platform serving thousands of customers
+                    across the region. We've built strong relationships with local farmers, suppliers, and distributors
+                    to ensure we can offer the freshest products at competitive prices.</p>
+
+                <p>Our commitment to quality, customer service, and innovation has made us a preferred choice for
+                    families who value their time and want the best for their loved ones. We continue to evolve and
+                    improve our services based on customer feedback and changing needs.</p>
             </div>
         </div>
     </div>
@@ -386,13 +464,15 @@
                 <div class="mission-card">
                     <div class="mission-icon">🎯</div>
                     <h3 class="mission-title">Our Mission</h3>
-                    <p class="mission-description">To provide fresh, high-quality groceries at affordable prices while delivering exceptional customer service and convenience to every household.</p>
+                    <p class="mission-description">To provide fresh, high-quality groceries at affordable prices while
+                        delivering exceptional customer service and convenience to every household.</p>
                 </div>
-                
+
                 <div class="mission-card">
                     <div class="mission-icon">👁️</div>
                     <h3 class="mission-title">Our Vision</h3>
-                    <p class="mission-description">To become the leading online grocery platform that transforms how people shop for food, making healthy eating accessible and convenient for everyone.</p>
+                    <p class="mission-description">To become the leading online grocery platform that transforms how
+                        people shop for food, making healthy eating accessible and convenient for everyone.</p>
                 </div>
             </div>
         </div>
@@ -404,42 +484,48 @@
                 <h2 class="section-title">Our Values</h2>
                 <p class="section-subtitle">The principles that guide everything we do</p>
             </div>
-            
+
             <div class="values-grid">
                 <div class="value-card">
                     <div class="value-icon">🌱</div>
                     <h4 class="value-title">Quality First</h4>
-                    <p class="value-description">We never compromise on quality. Every product is carefully selected and inspected to meet our high standards.</p>
+                    <p class="value-description">We never compromise on quality. Every product is carefully selected and
+                        inspected to meet our high standards.</p>
                 </div>
-                
+
                 <div class="value-card">
                     <div class="value-icon">🤝</div>
                     <h4 class="value-title">Customer Focus</h4>
-                    <p class="value-description">Our customers are at the heart of everything we do. We listen, learn, and continuously improve based on their needs.</p>
+                    <p class="value-description">Our customers are at the heart of everything we do. We listen, learn,
+                        and continuously improve based on their needs.</p>
                 </div>
-                
+
                 <div class="value-card">
                     <div class="value-icon">⚡</div>
                     <h4 class="value-title">Innovation</h4>
-                    <p class="value-description">We embrace technology and innovation to make grocery shopping faster, easier, and more enjoyable.</p>
+                    <p class="value-description">We embrace technology and innovation to make grocery shopping faster,
+                        easier, and more enjoyable.</p>
                 </div>
-                
+
                 <div class="value-card">
                     <div class="value-icon">🌍</div>
                     <h4 class="value-title">Sustainability</h4>
-                    <p class="value-description">We're committed to sustainable practices and supporting local farmers and suppliers.</p>
+                    <p class="value-description">We're committed to sustainable practices and supporting local farmers
+                        and suppliers.</p>
                 </div>
-                
+
                 <div class="value-card">
                     <div class="value-icon">🛡️</div>
                     <h4 class="value-title">Trust & Transparency</h4>
-                    <p class="value-description">We build trust through transparency, honest pricing, and reliable service.</p>
+                    <p class="value-description">We build trust through transparency, honest pricing, and reliable
+                        service.</p>
                 </div>
-                
+
                 <div class="value-card">
                     <div class="value-icon">👥</div>
                     <h4 class="value-title">Community</h4>
-                    <p class="value-description">We believe in supporting our local community and building lasting relationships.</p>
+                    <p class="value-description">We believe in supporting our local community and building lasting
+                        relationships.</p>
                 </div>
             </div>
         </div>
@@ -451,34 +537,38 @@
                 <h2 class="section-title">Meet Our Team</h2>
                 <p class="section-subtitle">The passionate people behind GroceryShop</p>
             </div>
-            
+
             <div class="team-grid">
                 <div class="team-member">
                     <div class="member-avatar">MK</div>
                     <h4 class="member-name">Manas Kamdi</h4>
                     <p class="member-role">Founder & CEO</p>
-                    <p class="member-bio">Visionary leader with 15+ years in retail and technology, passionate about revolutionizing grocery shopping.</p>
+                    <p class="member-bio">Visionary leader with 15+ years in retail and technology, passionate about
+                        revolutionizing grocery shopping.</p>
                 </div>
-                
+
                 <div class="team-member">
                     <div class="member-avatar">KK</div>
                     <h4 class="member-name">Kalyani Kamdi</h4>
                     <p class="member-role">Head of Operations</p>
-                    <p class="member-bio">Operations expert ensuring smooth logistics and supply chain management for our customers.</p>
+                    <p class="member-bio">Operations expert ensuring smooth logistics and supply chain management for
+                        our customers.</p>
                 </div>
-                
+
                 <div class="team-member">
                     <div class="member-avatar">SY</div>
                     <h4 class="member-name">Sujal Yeole</h4>
                     <p class="member-role">Quality Assurance Manager</p>
-                    <p class="member-bio">Quality specialist with extensive experience in food safety and product standards.</p>
+                    <p class="member-bio">Quality specialist with extensive experience in food safety and product
+                        standards.</p>
                 </div>
-                
+
                 <div class="team-member">
                     <div class="member-avatar">TW</div>
                     <h4 class="member-name">Tanmay Warthe</h4>
                     <p class="member-role">Customer Success Manager</p>
-                    <p class="member-bio">Customer advocate dedicated to ensuring every customer has an exceptional experience.</p>
+                    <p class="member-bio">Customer advocate dedicated to ensuring every customer has an exceptional
+                        experience.</p>
                 </div>
             </div>
         </div>
@@ -511,10 +601,48 @@
         <div class="container">
             <div class="cta-content">
                 <h2 class="cta-title">Join Our Community</h2>
-                <p class="cta-description">Be part of the GroceryShop family and experience the future of grocery shopping. Fresh products, great prices, and exceptional service await you.</p>
+                <p class="cta-description">Be part of the GroceryShop family and experience the future of grocery
+                    shopping. Fresh products, great prices, and exceptional service await you.</p>
                 <a href="{% url 'products' %}" class="btn-primary">Start Shopping Today</a>
             </div>
         </div>
     </div>
+    <div class="section-header">
+        <h2 class="section-title">Contact Us</h2>
+        <p class="section-subtitle">Get in touch with us for any questions or feedback</p>
+    </div>
+    <!-- ===== Contact Section ===== -->
+    <div class="contact-section">
+        <div class="contact-container">
+            <div class="section-header">
+                <h2 class="section-title">Contact Us</h2>
+                <p class="section-subtitle">We’re here to help and answer any question you might have.</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">📞</div>
+                    <h4 class="contact-title">Customer Support First Line Number</h4>
+                    <p class="contact-detail">+91 7387029875</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">📞</div>
+                    <h4 class="contact-title">Customer Support Second Line Number</h4>
+                    <p class="contact-detail">+91 9823000000</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h4 class="contact-title">Email</h4>
+                    <p class="contact-detail">groceryshop@gmail.com</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h4 class="contact-title">Customer Satisfaction</h4>
+                    <p class="contact-detail">99% Happy Customers</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
