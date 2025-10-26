@@ -21,12 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-16y8*al6jf7sp@jg057tycyje=_zs)ljzo^0us+g$b_v6=z8zu'
-
+SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-dev-key-for-local')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'groceryshop-74h8.onrender.com'
+]
 
 
 # Application definition
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # <<-- WhiteNoise
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -121,15 +123,15 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Additional directories where Django will look for static files during development
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'assets'),  # if your banner image is here
+    BASE_DIR / 'static',                 # put your project-level static here
+    # e.g. BASE_DIR / 'appname' / 'static'
 ]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (user uploads)
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+MEDIA_ROOT = BASE_DIR / 'media'
 # HTTPS Security Settings (Production)
 if not DEBUG:
     SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
