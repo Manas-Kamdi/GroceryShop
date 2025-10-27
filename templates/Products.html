@@ -1,354 +1,189 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products - GroceryShop</title>
-    {% load static %}
+    <title>Our Products</title>
+
     <style>
-        :root {
-            --bg: #f3faf9;
-            --text: #0b3f3a;
-            --brand: #0f766e;
-            --primary: #14b8a6;
-            --primary-strong: #0ea5a3;
-            --on-primary: #062a27;
-            --field: #fff;
-            --field-border: #c7e7e2;
-        }
-
         body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f1fcf8;
             margin: 0;
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-            background: var(--bg);
-            color: var(--text);
+            padding: 0;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-
-        .page-header {
+        .section-title {
             text-align: center;
-            margin-bottom: 48px;
+            font-size: 2.3rem;
+            color: #027b62;
+            margin-top: 40px;
         }
 
-        .page-title {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--brand);
-            margin: 0 0 16px 0;
+        .section-subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 40px;
         }
 
-        .page-subtitle {
-            font-size: 18px;
-            color: #6b7280;
-            margin: 0;
-        }
-
-        .filters {
+        .filter-bar {
             display: flex;
-            gap: 16px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
+            justify-content: center;
             align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
         }
 
-        .filter-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
+        .filter-bar select, .filter-bar input {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            min-width: 200px;
         }
 
-        .filter-group label {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .filter-group select,
-        input {
-            padding: 8px 12px;
-            border: 1px solid var(--field-border);
-            border-radius: 6px;
-            background: var(--field);
-            color: var(--text);
-        }
-
-        .filter-group select:focus,
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
-        }
-
-        .products-grid {
+        .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 48px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            justify-content: center;
+            padding: 0 50px 60px;
         }
 
         .product-card {
-            background: var(--field);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             overflow: hidden;
-            transition: transform 160ms ease, box-shadow 160ms ease;
-            position: relative;
+            transition: transform 0.3s ease;
         }
 
         .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
         }
 
         .product-image {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: cover;
-            background: #f8f9fa;
-            display: block;
+            border-bottom: 1px solid #e5e5e5;
+            background: #f8f8f8;
         }
 
         .product-info {
             padding: 20px;
         }
 
-        .product-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--brand);
-            margin: 0 0 8px 0;
+        .product-info h3 {
+            color: #027b62;
+            margin: 0;
+            font-size: 1.25rem;
         }
 
-        .product-description {
-            color: #6b7280;
-            font-size: 14px;
-            margin: 0 0 12px 0;
-            line-height: 1.4;
+        .product-info p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin: 8px 0;
         }
 
-        .product-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0 0 16px 0;
+        .price {
+            color: #008f69;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
 
-        .product-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-add-cart {
-            flex: 1;
-            padding: 10px 16px;
-            background: var(--primary);
-            color: var(--on-primary);
+        .add-btn {
+            display: block;
+            width: 100%;
+            background-color: #00b894;
+            color: #fff;
             border: none;
-            border-radius: 6px;
-            font-weight: 600;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 0 0 16px 16px;
             cursor: pointer;
-            transition: background-color 160ms ease;
         }
 
-        .btn-add-cart:hover {
-            background: var(--primary-strong);
-        }
-
-        .btn-add-cart:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        .no-products {
-            text-align: center;
-            padding: 48px;
-            color: #6b7280;
-        }
-
-        .no-products h3 {
-            margin: 0 0 16px 0;
-            color: var(--brand);
-        }
-
-        .message {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
-
-        .message.success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-
-        .message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-
-        .message.warning {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fde68a;
-        }
-
-        @media (max-width:768px) {
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 16px;
-            }
-
-            .filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-group {
-                justify-content: space-between;
-            }
+        .add-btn:hover {
+            background-color: #019170;
         }
     </style>
 </head>
-
 <body>
-    {% include 'Navbar.html' %}
+    <h2 class="section-title">Our Products</h2>
+    <p class="section-subtitle">Fresh groceries delivered to your doorstep</p>
 
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">Our Products</h1>
-            <p class="page-subtitle">Fresh groceries delivered to your doorstep</p>
-        </div>
+    <div class="filter-bar">
+        <label>Category:</label>
+        <select>
+            <option>All Categories</option>
+        </select>
 
-        {% if messages %}
-        {% for message in messages %}
-        <div class="message {{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-        {% endif %}
-
-        {% if products %}
-        {% csrf_token %}
-        <div class="filters">
-            <div class="filter-group">
-                <label for="category-filter">Category:</label>
-                <select id="category-filter">
-                    <option value="">All Categories</option>
-                    {% for category in categories %}
-                    <option value="{{ category }}">{{ category }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="search">Search:</label>
-                <input type="text" id="search" placeholder="Search products...">
-            </div>
-        </div>
-
-        <div class="products-grid" id="products-grid">
-            {% for product in products %}
-            <div class="product-card" data-category="{{ product.category|default:'' }}"
-                data-name="{{ product.name|lower }}">
-                {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
-                <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.name }}" class="product-image">
-                {% endif %}
-                <div class="product-info">
-                    <h3 class="product-name">{{ product.name }}</h3>
-                    {% if product.description %}
-                    <p class="product-description">{{ product.description|truncatewords:15 }}</p>
-                    {% endif %}
-                    <p class="product-price">₹{{ product.price }}</p>
-                    <div class="product-actions">
-                        {% if user.is_authenticated %}
-                        {% if product.stock_quantity > 0 %}
-                        <button class="btn-add-cart" onclick="addToCart(event, {{ product.id }})">Add to Cart</button>
-                        {% else %}
-                        <button class="btn-add-cart" disabled>Out of Stock</button>
-                        {% endif %}
-                        {% else %}
-                        <button class="btn-add-cart" onclick="showLoginAlert()">Add to Cart</button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="no-products">
-            <h3>No Products Available</h3>
-            <p>We're working on adding amazing products for you. Check back soon!</p>
-        </div>
-        {% endif %}
+        <label>Search:</label>
+        <input type="text" placeholder="Search products...">
     </div>
 
-    <script>
-        document.getElementById('category-filter').addEventListener('change', filterProducts);
-        document.getElementById('search').addEventListener('input', filterProducts);
+    <div class="product-grid">
+        <div class="product-card">
+            <img src="{% static 'images/apples.jpg' %}" alt="Fresh Organic Apples" class="product-image">
+            <div class="product-info">
+                <h3>Fresh Organic Apples</h3>
+                <p>Crisp and juicy organic apples, perfect for snacking or baking.</p>
+                <p class="price">₹180.00</p>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        </div>
 
-        function filterProducts() {
-            const category = document.getElementById('category-filter').value;
-            const search = document.getElementById('search').value.toLowerCase();
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach(card => {
-                const matchCategory = !category || card.dataset.category === category;
-                const matchSearch = !search || card.dataset.name.includes(search);
-                card.style.display = (matchCategory && matchSearch) ? 'block' : 'none';
-            });
-        }
+        <div class="product-card">
+            <img src="{% static 'images/bread.jpg' %}" alt="Whole Grain Bread" class="product-image">
+            <div class="product-info">
+                <h3>Whole Grain Bread</h3>
+                <p>Nutritious whole grain bread made with premium ingredients.</p>
+                <p class="price">₹45.00</p>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        </div>
 
-        function addToCart(event, productId) {
-            const button = event.currentTarget;
-            const originalText = button.textContent;
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        <div class="product-card">
+            <img src="{% static 'images/milk.jpg' %}" alt="Organic Milk 1L" class="product-image">
+            <div class="product-info">
+                <h3>Organic Milk 1L</h3>
+                <p>Fresh organic milk from grass-fed cows.</p>
+                <p class="price">₹65.00</p>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        </div>
 
-            button.textContent = 'Adding...';
-            button.disabled = true;
+        <div class="product-card">
+            <img src="{% static 'images/spinach.jpg' %}" alt="Fresh Spinach" class="product-image">
+            <div class="product-info">
+                <h3>Fresh Spinach</h3>
+                <p>Leafy green spinach, perfect for salads and cooking.</p>
+                <p class="price">₹25.00</p>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        </div>
 
-            fetch('{% url "add_to_cart" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken
-                },
-                body: `product_id=${productId}&quantity=1`
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) showMessage('Product added to cart!', 'success');
-                    else showMessage(data.error || 'Failed to add product', 'error');
-                })
-                .catch(() => showMessage('Network error', 'error'))
-                .finally(() => {
-                    button.textContent = originalText;
-                    button.disabled = false;
-                });
-        }
+        <div class="product-card">
+            <img src="{% static 'images/eggs.jpg' %}" alt="Free Range Eggs" class="product-image">
+            <div class="product-info">
+                <h3>Free Range Eggs (12 pack)</h3>
+                <p>Farm-fresh free range eggs from happy hens.</p>
+                <p class="price">₹120.00</p>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        </div>
 
-        function showLoginAlert() {
-            showMessage('Please log in to add products to cart', 'warning');
-            setTimeout(() => { window.location.href = '{% url "login" %}'; }, 2000);
-        }
-
-        function showMessage(msg, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `message ${type}`;
-            div.textContent = msg;
-            div.style.cssText = `position:fixed;top:20px;right:20px;z-index:1000;animation:slideInRight 0.3s ease;`;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 3000);
-        }
-
-        const style = document.createElement('style');
-        style.textContent = `@keyframes slideInRight{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}`;
-        document.head.appendChild(style);
-    </script>
+        <div class="product-card">
+            <img src="{% static 'images/bananas.jpg' %}" alt="Organic Bananas" class="product-image">
+            <div class="product-info">
+                <h3>Organic Bananas</h3>
+                <p>Sweet and ripe organic bananas, great for smoothies.</p>
+                <p class="price">₹80.00</p>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        </div>
+    </div>
 </body>
-
 </html>
