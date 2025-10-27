@@ -16,6 +16,9 @@
             --on-primary: #062a27;
             --field: #fff;
             --field-border: #c7e7e2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
@@ -109,7 +112,6 @@
             height: 200px;
             object-fit: cover;
             background: #f8f9fa;
-            display: block;
         }
 
         .product-info {
@@ -219,7 +221,6 @@
 
 <body>
     {% include 'Navbar.html' %}
-
     <div class="container">
         <div class="page-header">
             <h1 class="page-title">Our Products</h1>
@@ -259,12 +260,14 @@
                 {% else %}
                 <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.name }}" class="product-image">
                 {% endif %}
+
                 <div class="product-info">
                     <h3 class="product-name">{{ product.name }}</h3>
                     {% if product.description %}
                     <p class="product-description">{{ product.description|truncatewords:15 }}</p>
                     {% endif %}
                     <p class="product-price">₹{{ product.price }}</p>
+
                     <div class="product-actions">
                         {% if user.is_authenticated %}
                         {% if product.stock_quantity > 0 %}
