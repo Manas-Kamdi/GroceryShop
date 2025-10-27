@@ -313,10 +313,23 @@ def process_payment(request):
 @login_required
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, "MyOrders.html", {"orders": orders})
+    return render(request, "my_orders.html", {"orders": orders})
 
 # 🚚 Track Order
 @login_required
 def track_order(request, order_number):
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
-    return render(request, "TrackOrder.html", {"order": order})
+
+    # Define the order statuses and icons here (Python handles .split)
+    order_status_list = [
+        ("pending", "📋", "Pending"),
+        ("confirmed", "✅", "Confirmed"),
+        ("processing", "🔄", "Processing"),
+        ("shipped", "🚚", "Shipped"),
+        ("delivered", "📦", "Delivered"),
+    ]
+
+    return render(request, "TrackOrder.html", {
+        "order": order,
+        "order_status_list": order_status_list
+    })

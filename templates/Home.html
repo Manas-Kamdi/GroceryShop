@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,39 +27,24 @@
             color: var(--text);
         }
 
+        a {
+            text-decoration: none;
+        }
+
         .hero-section {
             background: linear-gradient(135deg, var(--brand) 0%, var(--primary) 100%);
             color: white;
-            padding: 80px 0;
+            padding: 80px 16px;
             text-align: center;
             position: relative;
             overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 24px;
         }
 
         .hero-title {
             font-size: 48px;
             font-weight: 700;
             margin: 0 0 16px 0;
-            letter-spacing: -0.02em;
+            line-height: 1.2;
         }
 
         .hero-subtitle {
@@ -75,15 +61,19 @@
             flex-wrap: wrap;
         }
 
-        .btn-primary {
-            padding: 16px 32px;
-            background: white;
-            color: var(--brand);
-            text-decoration: none;
+        .btn-primary,
+        .btn-secondary {
+            padding: 14px 28px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 16px;
-            transition: all 160ms ease;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--brand);
             border: 2px solid white;
         }
 
@@ -94,14 +84,8 @@
         }
 
         .btn-secondary {
-            padding: 16px 32px;
             background: transparent;
             color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 160ms ease;
             border: 2px solid white;
         }
 
@@ -126,14 +110,14 @@
         }
 
         .features-section {
-            padding: 80px 0;
+            padding: 60px 16px;
             background: var(--field);
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 24px;
+            padding: 0 16px;
         }
 
         .section-header {
@@ -151,25 +135,24 @@
         .section-subtitle {
             font-size: 18px;
             color: #6b7280;
-            margin: 0;
-            max-width: 600px;
             margin: 0 auto;
+            max-width: 600px;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 32px;
             margin-bottom: 48px;
         }
 
         .feature-card {
             background: var(--field);
-            padding: 32px;
+            padding: 24px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             text-align: center;
-            transition: transform 160ms ease, box-shadow 160ms ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .feature-card:hover {
@@ -198,54 +181,45 @@
         .stats-section {
             background: var(--brand);
             color: white;
-            padding: 60px 0;
+            padding: 60px 16px;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 24px;
             text-align: center;
         }
 
-        .stat-item {
-            padding: 24px;
-        }
-
         .stat-number {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             margin: 0 0 8px 0;
         }
 
         .stat-label {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.9;
             margin: 0;
         }
 
         .cta-section {
-            padding: 80px 0;
+            padding: 60px 16px;
             background: var(--bg);
             text-align: center;
         }
 
-        .cta-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
         .cta-title {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--brand);
             margin: 0 0 16px 0;
         }
 
         .cta-description {
-            font-size: 18px;
+            font-size: 16px;
             color: #6b7280;
-            margin: 0 0 32px 0;
+            margin: 0 0 24px 0;
             line-height: 1.6;
         }
 
@@ -257,12 +231,11 @@
             background: #0f766e10;
         }
 
-        .banner .banner-fluid {
+        .banner img {
             display: block;
             width: 100%;
-            height: 440px;
+            height: auto;
             object-fit: cover;
-            object-position: center;
         }
 
         @media (max-width: 768px) {
@@ -274,11 +247,6 @@
                 font-size: 18px;
             }
 
-            .hero-cta {
-                flex-direction: column;
-                align-items: center;
-            }
-
             .features-grid {
                 grid-template-columns: 1fr;
             }
@@ -287,79 +255,103 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
     {% load static %}
     {% include 'Navbar.html' %}
-    
+
     {% if welcome_message %}
     <div class="welcome-message">
         <h2>{{ welcome_message }}</h2>
     </div>
     {% endif %}
-    
+
     <div class="hero-section">
         <div class="hero-content">
             <h1 class="hero-title">Fresh Groceries, Delivered to Your Door</h1>
-            <p class="hero-subtitle">Shop for the freshest fruits, vegetables, dairy, and more from the comfort of your home. Quality guaranteed, convenience delivered.</p>
+            <p class="hero-subtitle">Shop for the freshest fruits, vegetables, dairy, and more from the comfort of your
+                home. Quality guaranteed, convenience delivered.</p>
             <div class="hero-cta">
                 <a href="{% url 'products' %}" class="btn-primary">Shop Now</a>
                 {% if not user.is_authenticated %}
-                    <a href="{% url 'signup' %}" class="btn-secondary">Get Started</a>
+                <a href="{% url 'signup' %}" class="btn-secondary">Get Started</a>
                 {% else %}
-                    <a href="{% url 'dashboard' %}" class="btn-secondary">Dashboard</a>
+                <a href="{% url 'dashboard' %}" class="btn-secondary">Dashboard</a>
                 {% endif %}
             </div>
         </div>
     </div>
-
-    <div class="banner">
-        <img src="../Assets/banner.png" class="banner-fluid" alt="Fresh Groceries Banner">
-    </div>
-
     <div class="features-section">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Why Choose GroceryShop?</h2>
-                <p class="section-subtitle">We're committed to bringing you the best grocery shopping experience with quality products and exceptional service.</p>
+                <p class="section-subtitle">We're committed to bringing you the best grocery shopping experience with
+                    quality products and exceptional service.</p>
             </div>
-            
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🥬</div>
                     <h3 class="feature-title">Fresh Products</h3>
-                    <p class="feature-description">We source the freshest fruits, vegetables, and groceries directly from trusted suppliers to ensure quality in every order.</p>
+                    <p class="feature-description">We source the freshest fruits, vegetables, and groceries directly
+                        from trusted suppliers to ensure quality in every order.</p>
                 </div>
-                
                 <div class="feature-card">
                     <div class="feature-icon">🚚</div>
                     <h3 class="feature-title">Fast Delivery</h3>
-                    <p class="feature-description">Quick and reliable delivery service to your doorstep. Order today and get your groceries delivered within hours.</p>
+                    <p class="feature-description">Quick and reliable delivery service to your doorstep. Order today and
+                        get your groceries delivered within hours.</p>
                 </div>
-                
                 <div class="feature-card">
                     <div class="feature-icon">💰</div>
                     <h3 class="feature-title">Best Prices</h3>
-                    <p class="feature-description">Competitive pricing on all products. Save money while getting quality groceries delivered to your home.</p>
+                    <p class="feature-description">Competitive pricing on all products. Save money while getting quality
+                        groceries delivered to your home.</p>
                 </div>
-                
                 <div class="feature-card">
                     <div class="feature-icon">🛡️</div>
                     <h3 class="feature-title">Quality Guarantee</h3>
-                    <p class="feature-description">100% satisfaction guarantee. If you're not happy with your order, we'll make it right.</p>
+                    <p class="feature-description">100% satisfaction guarantee. If you're not happy with your order,
+                        we'll make it right.</p>
                 </div>
-                
                 <div class="feature-card">
                     <div class="feature-icon">📱</div>
                     <h3 class="feature-title">Easy Shopping</h3>
-                    <p class="feature-description">Simple and intuitive online shopping experience. Browse, select, and order your groceries in minutes.</p>
+                    <p class="feature-description">Simple and intuitive online shopping experience. Browse, select, and
+                        order your groceries in minutes.</p>
                 </div>
-                
                 <div class="feature-card">
                     <div class="feature-icon">🌱</div>
                     <h3 class="feature-title">Organic Options</h3>
-                    <p class="feature-description">Wide selection of organic and natural products for health-conscious customers.</p>
+                    <p class="feature-description">Wide selection of organic and natural products for health-conscious
+                        customers.</p>
                 </div>
             </div>
         </div>
@@ -392,15 +384,17 @@
         <div class="container">
             <div class="cta-content">
                 <h2 class="cta-title">Ready to Start Shopping?</h2>
-                <p class="cta-description">Join thousands of satisfied customers who trust GroceryShop for their daily grocery needs. Fresh products, great prices, and convenient delivery.</p>
+                <p class="cta-description">Join thousands of satisfied customers who trust GroceryShop for their daily
+                    grocery needs. Fresh products, great prices, and convenient delivery.</p>
                 <div class="hero-cta">
                     <a href="{% url 'products' %}" class="btn-primary">Browse Products</a>
                     {% if not user.is_authenticated %}
-                        <a href="{% url 'signup' %}" class="btn-secondary">Create Account</a>
+                    <a href="{% url 'signup' %}" class="btn-secondary">Create Account</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
