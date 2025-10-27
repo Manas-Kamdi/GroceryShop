@@ -5,11 +5,11 @@ from .models import Product, UserProfile, Cart, CartItem, Order, OrderItem
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'category', 'stock_quantity', 'created_at']
-    list_filter = ['category', 'created_at']
+    list_display = ['name', 'price', 'category', 'stock_quantity']
+    list_filter = ['category']
     search_fields = ['name', 'description', 'category']
     list_editable = ['price', 'stock_quantity']
-    ordering = ['-created_at']
+    ordering = ['name']
     
     fieldsets = (
         ('Basic Information', {

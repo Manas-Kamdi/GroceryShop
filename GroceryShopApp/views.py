@@ -83,7 +83,7 @@ def logout(request):
 def dashboard(request):
     return render(request, "Dashboard.html")
 
-# 🛒 Products Page
+#🛒 Products Page
 def products(request):
     products = Product.objects.all()
     categories = Product.objects.values_list('category', flat=True).distinct().exclude(category__isnull=True).exclude(category='')
@@ -232,7 +232,7 @@ def profile(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     cart, created = Cart.objects.get_or_create(user=request.user)
     
-    return render(request, "Profile.html", {"profile": profile})
+    return render(request, "profile.html", {"profile": profile})
 
 # 💳 Payment Page
 @login_required
