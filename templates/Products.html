@@ -12,7 +12,12 @@
     --field:#fff; --field-border:#c7e7e2; --success:#10b981;
     --error:#ef4444; --warning:#f59e0b;
 }
-body {margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text);}
+body {
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    background:var(--bg);
+    color:var(--text);
+}
 .container {max-width:1200px;margin:0 auto;padding:24px;}
 .page-header{text-align:center;margin-bottom:48px;}
 .page-title{font-size:36px;font-weight:700;color:var(--brand);margin:0 0 16px 0;}
@@ -20,10 +25,24 @@ body {margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Ari
 .filters{display:flex;gap:16px;margin-bottom:32px;flex-wrap:wrap;align-items:center;}
 .filter-group{display:flex;gap:8px;align-items:center;}
 .filter-group label{font-weight:600;font-size:14px;}
-.filter-group select,input{padding:8px 12px;border:1px solid var(--field-border);border-radius:6px;background:var(--field);color:var(--text);}
-.filter-group select:focus,input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(20,184,166,0.15);}
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;margin-bottom:48px;}
-.product-card{background:var(--field);border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.05);overflow:hidden;transition:transform 160ms ease,box-shadow 160ms ease;position:relative;}
+.filter-group select,input{
+    padding:8px 12px;border:1px solid var(--field-border);
+    border-radius:6px;background:var(--field);color:var(--text);
+}
+.filter-group select:focus,input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(20,184,166,0.15);
+}
+.products-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:24px;margin-bottom:48px;
+}
+.product-card{
+    background:var(--field);border-radius:12px;
+    box-shadow:0 4px 6px rgba(0,0,0,0.05);
+    overflow:hidden;transition:transform 160ms ease,box-shadow 160ms ease;
+}
 .product-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,0,0,0.15);}
 .product-image{width:100%;height:200px;object-fit:cover;background:#f8f9fa;}
 .product-info{padding:20px;}
@@ -31,7 +50,11 @@ body {margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Ari
 .product-description{color:#6b7280;font-size:14px;margin:0 0 12px 0;line-height:1.4;}
 .product-price{font-size:20px;font-weight:700;color:var(--primary);margin:0 0 16px 0;}
 .product-actions{display:flex;gap:8px;}
-.btn-add-cart{flex:1;padding:10px 16px;background:var(--primary);color:var(--on-primary);border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:background-color 160ms ease;}
+.btn-add-cart{
+    flex:1;padding:10px 16px;background:var(--primary);
+    color:var(--on-primary);border:none;border-radius:6px;
+    font-weight:600;cursor:pointer;transition:background-color 160ms ease;
+}
 .btn-add-cart:hover{background:var(--primary-strong);}
 .btn-add-cart:disabled{background:#9ca3af;cursor:not-allowed;}
 .no-products{text-align:center;padding:48px;color:#6b7280;}
@@ -49,6 +72,7 @@ body {margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Ari
 </head>
 <body>
 {% include 'Navbar.html' %}
+
 <div class="container">
     <div class="page-header">
         <h1 class="page-title">Our Products</h1>
@@ -81,20 +105,25 @@ body {margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Ari
 
         <div class="products-grid" id="products-grid">
             {% for product in products %}
-            <div class="product-card" data-category="{{ product.category|default:'' }}" data-name="{{ product.name|lower }}">
+            <div class="product-card" 
+                data-category="{{ product.category|default:'' }}" 
+                data-name="{{ product.name|lower }}">
+
                 {% if product.image %}
+                    <!-- ✅ Media images -->
                     <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
                 {% else %}
-                    <img src="{% static 'images/product-placeholder.svg' %}" alt="{{ product.name }}" class="product-image">
+                    <!-- ✅ Fallback static image -->
+                    <img src="{% static 'Assets/product-placeholder.png' %}" alt="{{ product.name }}" class="product-image">
                 {% endif %}
-                
+
                 <div class="product-info">
                     <h3 class="product-name">{{ product.name }}</h3>
                     {% if product.description %}
                         <p class="product-description">{{ product.description|truncatewords:15 }}</p>
                     {% endif %}
                     <p class="product-price">₹{{ product.price }}</p>
-                    
+
                     <div class="product-actions">
                         {% if user.is_authenticated %}
                             {% if product.stock_quantity > 0 %}
