@@ -3,11 +3,11 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=15, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     area = models.CharField(max_length=100, blank=True, null=True)
     landmark = models.CharField(max_length=100, blank=True, null=True)
     pincode = models.CharField(max_length=10, blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
     def __str__(self):
@@ -108,4 +108,6 @@ class OrderItem(models.Model):
     
     @property
     def total_price(self):
+        if self.price is None or self.quantity is None:
+            return 0
         return self.price * self.quantity

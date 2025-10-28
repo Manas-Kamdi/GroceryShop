@@ -5,11 +5,11 @@ from .models import Product, UserProfile, Cart, CartItem, Order, OrderItem
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'category', 'stock_quantity']
-    list_filter = ['category']
+    list_display = ['name', 'price', 'category', 'stock_quantity', 'created_at']
+    list_filter = ['category', 'created_at']
     search_fields = ['name', 'description', 'category']
     list_editable = ['price', 'stock_quantity']
-    ordering = ['name']
+    ordering = ['-created_at']
     
     fieldsets = (
         ('Basic Information', {
@@ -64,8 +64,37 @@ class OrderAdmin(admin.ModelAdmin):
         }),
     )
 
+    # ✅ Custom Admin Actions for Order Management
+    actions = ['confirm_orders', 'mark_as_processing', 'mark_as_shipped', 'mark_as_delivered', 'cancel_orders']
+
+    def confirm_orders(self, request, queryset):
+        updated = queryset.filter(order_status='pending').update(order_status='confirmed')
+        self.message_user(request, f"{updated} order(s) confirmed successfully.")
+    confirm_orders.short_description = "✅ Confirm selected orders"
+
+    def mark_as_processing(self, request, queryset):
+        updated = queryset.filter(order_status='confirmed').update(order_status='processing')
+        self.message_user(request, f"{updated} order(s) moved to Processing.")
+    mark_as_processing.short_description = "⚙️ Mark selected orders as Processing"
+
+    def mark_as_shipped(self, request, queryset):
+        updated = queryset.filter(order_status='processing').update(order_status='shipped')
+        self.message_user(request, f"{updated} order(s) marked as Shipped.")
+    mark_as_shipped.short_description = "📦 Mark selected orders as Shipped"
+
+    def mark_as_delivered(self, request, queryset):
+        updated = queryset.filter(order_status='shipped').update(order_status='delivered')
+        self.message_user(request, f"{updated} order(s) marked as Delivered.")
+    mark_as_delivered.short_description = "🚚 Mark selected orders as Delivered"
+
+    def cancel_orders(self, request, queryset):
+        updated = queryset.exclude(order_status='delivered').update(order_status='cancelled')
+        self.message_user(request, f"{updated} order(s) cancelled successfully.")
+    cancel_orders.short_description = "❌ Cancel selected orders"
+
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product', 'quantity', 'price', 'total_price']
     list_filter = ['order__order_status', 'product__category']
     search_fields = ['order__order_number', 'product__name']
+

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .models import Product, Cart, CartItem, Order, OrderItem, UserProfile
@@ -189,50 +189,42 @@ def remove_from_cart(request):
         return JsonResponse({"error": str(e)})
 
 # 👤 Profile Page
+
 @login_required
 def profile(request):
-    if request.method == "POST":
+    user = request.user
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
         # Update user fields
-        user = request.user
-        user.first_name = request.POST.get("first_name", "")
-        user.last_name = request.POST.get("last_name", "")
-        user.email = request.POST.get("email", user.email)
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.email = request.POST.get('email', user.email)
         user.save()
-        
-        # Update or create profile
-        profile, created = UserProfile.objects.get_or_create(user=user)
-        profile.phone = request.POST.get("phone", "")
-        profile.address = request.POST.get("address", "")
-        profile.area = request.POST.get("area", "")
-        profile.landmark = request.POST.get("landmark", "")
-        profile.pincode = request.POST.get("pincode", "")
-        
-        # Handle profile photo
-        if request.FILES.get("profile_photo"):
-            try:
-                # Delete old photo if exists
-                if profile.profile_photo:
-                    profile.profile_photo.delete()
-                profile.profile_photo = request.FILES.get("profile_photo")
-            except Exception as e:
-                messages.error(request, f"Error uploading photo: {str(e)}")
-        elif request.POST.get("remove_photo"):
-            try:
-                if profile.profile_photo:
-                    profile.profile_photo.delete()
-                profile.profile_photo = None
-            except Exception as e:
-                messages.error(request, f"Error removing photo: {str(e)}")
-        
+
+        # Update profile fields
+        profile.phone = request.POST.get('phone', '')
+        profile.address = request.POST.get('address', '')
+        profile.area = request.POST.get('area', '')
+        profile.landmark = request.POST.get('landmark', '')
+        profile.pincode = request.POST.get('pincode', '')
+
+        # Handle profile photo upload
+        if 'profile_photo' in request.FILES:
+            profile.profile_photo = request.FILES['profile_photo']
+
+        # Handle photo removal
+        if 'remove_photo' in request.POST:
+            if profile.profile_photo:
+                profile.profile_photo.delete(save=False)
+            profile.profile_photo = None
+
         profile.save()
-        messages.success(request, "Profile updated successfully!")
-        return redirect("profile")
-    
-    # Ensure user has a profile and cart
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    
-    return render(request, "profile.html", {"profile": profile})
+        messages.success(request, "✅ Profile updated successfully!")
+        return redirect('profile')
+
+    context = {'user': user}
+    return render(request, 'profile.html', context)
 
 # 💳 Payment Page
 @login_required
@@ -333,3 +325,30 @@ def track_order(request, order_number):
         "order": order,
         "order_status_list": order_status_list
     })
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    if order.order_status != 'cancelled':
+        order.order_status = 'cancelled'
+        order.save()
+        messages.success(request, f"Order #{order.order_number} has been cancelled.")
+    else:
+        messages.info(request, f"Order #{order.order_number} is already cancelled.")
+    
+    return redirect('my_orders')
+
+# ✅ Only admin can access this
+@user_passes_test(lambda u: u.is_staff)
+def admin_confirm_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if order.order_status == 'pending':
+        order.order_status = 'confirmed'
+        order.save()
+        messages.success(request, f"Order #{order.order_number} has been confirmed by Admin.")
+    else:
+        messages.warning(request, f"Order #{order.order_number} cannot be confirmed (already {order.order_status}).")
+
+    return redirect('/admin/orders/')  # You can change this to your custom admin order list page

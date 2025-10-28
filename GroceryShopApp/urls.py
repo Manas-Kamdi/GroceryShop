@@ -20,4 +20,6 @@ urlpatterns = [
     path("process-payment/", views.process_payment, name="process_payment"),
     path("my-orders/", views.my_orders, name="my_orders"),
     path("track-order/<str:order_number>/", views.track_order, name="track_order"),
+    path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    path('admin/confirm_order/<int:order_id>/', views.admin_confirm_order, name='admin_confirm_order'),
 ]
