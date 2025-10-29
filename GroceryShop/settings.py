@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+# from dotenv import load_dotenv
+# load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -59,6 +61,13 @@ TEMPLATES = [
         },
     },
 ]
+
+# RAZORPAY_KEY_ID = os.getenv('rzp_live_RZLWxbScWFFLQq')
+# RAZORPAY_KEY_SECRET = os.getenv('YJ6nzXvLPc32fmyYL75AMkrU')
+
+
+RAZORPAY_KEY_ID = "rzp_live_RZLWxbScWFFLQq"
+RAZORPAY_KEY_SECRET = "YJ6nzXvLPc32fmyYL75AMkrU"
 
 WSGI_APPLICATION = 'GroceryShop.wsgi.application'
 

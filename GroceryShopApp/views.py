@@ -2,14 +2,20 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required,user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .models import Product, Cart, CartItem, Order, OrderItem, UserProfile
+import uuid
+import razorpay
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+
 
 # 🏠 Home Page
 def home(request):
-    products = Product.objects.all()[:8]  # Show only 8 products on home page
+    products = Product.objects.all()[:8]
     return render(request, "Home.html", {"products": products})
 
 # 🔑 Login Page
@@ -17,14 +23,14 @@ def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        
-        # Try to find user by email first, then by username
+
+        # Find user by email or username
         try:
             user = User.objects.get(email=email)
             username = user.username
         except User.DoesNotExist:
-            username = email  # Try as username if email not found
-        
+            username = email
+
         user = authenticate(request, username=username, password=password)
         if user:
             auth_login(request, user)
@@ -42,33 +48,15 @@ def signup(request):
         address = request.POST.get("address")
         password = request.POST.get("password")
         c_password = request.POST.get("c-password")
-        
-        # Validation
+
         if password != c_password:
             messages.error(request, "Passwords do not match")
         elif User.objects.filter(email=email).exists():
             messages.error(request, "Email already exists")
-        elif User.objects.filter(username=email).exists():
-            messages.error(request, "Email already exists")
         else:
-            # Create user with email as username
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=password,
-                first_name=name
-            )
-            
-            # Create user profile
-            UserProfile.objects.create(
-                user=user,
-                phone=number,
-                address=address
-            )
-            
-            # Create cart for user
+            user = User.objects.create_user(username=email, email=email, password=password, first_name=name)
+            UserProfile.objects.create(user=user, phone=number, address=address)
             Cart.objects.create(user=user)
-            
             messages.success(request, "Account created successfully! Please log in.")
             return redirect("login")
     return render(request, "Signup.html")
@@ -83,7 +71,7 @@ def logout(request):
 def dashboard(request):
     return render(request, "Dashboard.html")
 
-#🛒 Products Page
+# 🛒 Products Page
 def products(request):
     products = Product.objects.all()
     categories = Product.objects.values_list('category', flat=True).distinct().exclude(category__isnull=True).exclude(category='')
@@ -93,20 +81,13 @@ def products(request):
 @login_required
 def add_product(request):
     if request.method == "POST":
-        name = request.POST.get("name")
-        description = request.POST.get("description", "")
-        price = request.POST.get("price")
-        category = request.POST.get("category", "")
-        stock_quantity = request.POST.get("stock_quantity", 0)
-        image = request.FILES.get("image")
-        
         Product.objects.create(
-            name=name,
-            description=description,
-            price=price,
-            category=category,
-            stock_quantity=stock_quantity,
-            image=image
+            name=request.POST.get("name"),
+            description=request.POST.get("description", ""),
+            price=request.POST.get("price"),
+            category=request.POST.get("category", ""),
+            stock_quantity=request.POST.get("stock_quantity", 0),
+            image=request.FILES.get("image")
         )
         messages.success(request, "Product added successfully!")
         return redirect("products")
@@ -119,42 +100,27 @@ def about(request):
 # 🛒 Cart Page
 @login_required
 def cart(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_items = CartItem.objects.filter(cart=cart)
-    
-    # Calculate totals
     total_items = sum(item.quantity for item in cart_items)
     total_price = sum(item.total_price for item in cart_items)
-    
-    return render(request, "Cart.html", {
-        "cart_items": cart_items, 
-        "cart": cart,
-        "total_items": total_items,
-        "total_price": total_price
-    })
+    return render(request, "Cart.html", {"cart_items": cart_items, "total_items": total_items, "total_price": total_price})
 
 # ➕ Add to Cart
 @login_required
 @require_POST
 def add_to_cart(request):
     product_id = request.POST.get("product_id")
-    if not product_id:
-        return JsonResponse({"error": "Product ID is required"})
-    
     try:
         product = Product.objects.get(id=product_id)
-        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        
         if not created:
             cart_item.quantity += 1
             cart_item.save()
-        
-        return JsonResponse({"success": True, "message": "Product added to cart"})
+        return JsonResponse({"success": True})
     except Product.DoesNotExist:
         return JsonResponse({"error": "Product not found"})
-    except Exception as e:
-        return JsonResponse({"error": str(e)})
 
 # 🔄 Update Cart Item
 @login_required
@@ -162,143 +128,96 @@ def add_to_cart(request):
 def update_cart_item(request):
     item_id = request.POST.get("item_id")
     quantity = int(request.POST.get("quantity", 1))
-    
     try:
         cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
         cart_item.quantity = quantity
         cart_item.save()
-        return JsonResponse({"success": True, "message": "Cart updated"})
+        return JsonResponse({"success": True})
     except CartItem.DoesNotExist:
         return JsonResponse({"error": "Cart item not found"})
-    except Exception as e:
-        return JsonResponse({"error": str(e)})
 
 # ❌ Remove from Cart
 @login_required
 @require_POST
 def remove_from_cart(request):
     item_id = request.POST.get("item_id")
-    
     try:
-        cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
-        cart_item.delete()
-        return JsonResponse({"success": True, "message": "Item removed from cart"})
+        CartItem.objects.get(id=item_id, cart__user=request.user).delete()
+        return JsonResponse({"success": True})
     except CartItem.DoesNotExist:
         return JsonResponse({"error": "Cart item not found"})
-    except Exception as e:
-        return JsonResponse({"error": str(e)})
 
 # 👤 Profile Page
-
 @login_required
 def profile(request):
     user = request.user
-    profile, created = UserProfile.objects.get_or_create(user=user)
-
+    profile, _ = UserProfile.objects.get_or_create(user=user)
     if request.method == 'POST':
-        # Update user fields
         user.first_name = request.POST.get('first_name', '')
         user.last_name = request.POST.get('last_name', '')
         user.email = request.POST.get('email', user.email)
         user.save()
 
-        # Update profile fields
         profile.phone = request.POST.get('phone', '')
         profile.address = request.POST.get('address', '')
         profile.area = request.POST.get('area', '')
         profile.landmark = request.POST.get('landmark', '')
         profile.pincode = request.POST.get('pincode', '')
 
-        # Handle profile photo upload
         if 'profile_photo' in request.FILES:
             profile.profile_photo = request.FILES['profile_photo']
 
-        # Handle photo removal
-        if 'remove_photo' in request.POST:
-            if profile.profile_photo:
-                profile.profile_photo.delete(save=False)
+        if 'remove_photo' in request.POST and profile.profile_photo:
+            profile.profile_photo.delete(save=False)
             profile.profile_photo = None
 
         profile.save()
         messages.success(request, "✅ Profile updated successfully!")
         return redirect('profile')
 
-    context = {'user': user}
-    return render(request, 'profile.html', context)
+    return render(request, 'profile.html', {'user': user, 'profile': profile})
 
 # 💳 Payment Page
 @login_required
 def payment(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_items = CartItem.objects.filter(cart=cart)
-    
     if not cart_items.exists():
-        messages.warning(request, "Your cart is empty. Add some products first!")
+        messages.warning(request, "Your cart is empty.")
         return redirect("cart")
-    
-    # Calculate totals
     total_items = sum(item.quantity for item in cart_items)
     total_price = sum(item.total_price for item in cart_items)
-    
-    return render(request, "Payment.html", {
-        "cart_items": cart_items, 
-        "cart": cart,
-        "total_items": total_items,
-        "total_price": total_price
-    })
+    return render(request, "Payment.html", {"cart_items": cart_items, "total_price": total_price})
 
-# 💰 Razorpay Order Creation
-@login_required
-@require_POST
-def create_razorpay_order(request):
-    # Mock Razorpay order creation - replace with actual API call
-    import uuid
-    order_id = str(uuid.uuid4())
-    return JsonResponse({"order_id": order_id, "status": "created"})
-
-# 🧾 Process Payment
+# 💰 Process Payment
 @login_required
 @require_POST
 def process_payment(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_items = CartItem.objects.filter(cart=cart)
-    
     if not cart_items.exists():
         return JsonResponse({"error": "Cart is empty"})
-    
-    # Create order
-    import uuid
+
     order_number = f"ORD-{uuid.uuid4().hex[:8].upper()}"
     total_amount = sum(item.total_price for item in cart_items)
-    
-    # Get or create user profile
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
     order = Order.objects.create(
         user=request.user,
         order_number=order_number,
         total_amount=total_amount,
-        delivery_name=request.POST.get("delivery_name", request.user.first_name or ""),
-        delivery_phone=request.POST.get("delivery_phone", profile.phone or ""),
-        delivery_address=request.POST.get("delivery_address", profile.address or ""),
-        delivery_area=request.POST.get("delivery_area", profile.area or ""),
-        delivery_landmark=request.POST.get("delivery_landmark", profile.landmark or ""),
-        delivery_pincode=request.POST.get("delivery_pincode", profile.pincode or ""),
-        payment_status="paid"
+        delivery_name=request.POST.get("delivery_name", request.user.first_name),
+        delivery_phone=request.POST.get("delivery_phone", profile.phone),
+        delivery_address=request.POST.get("delivery_address", profile.address),
+        delivery_area=request.POST.get("delivery_area", profile.area),
+        delivery_landmark=request.POST.get("delivery_landmark", profile.landmark),
+        delivery_pincode=request.POST.get("delivery_pincode", profile.pincode),
+        payment_status="paid",
     )
-    
-    # Create order items
+
     for cart_item in cart_items:
-        OrderItem.objects.create(
-            order=order,
-            product=cart_item.product,
-            quantity=cart_item.quantity,
-            price=cart_item.product.price
-        )
-    
-    # Clear cart
+        OrderItem.objects.create(order=order, product=cart_item.product, quantity=cart_item.quantity, price=cart_item.product.price)
     cart_items.delete()
-    
     return JsonResponse({"success": True, "order_number": order_number})
 
 # 📦 My Orders
@@ -311,8 +230,6 @@ def my_orders(request):
 @login_required
 def track_order(request, order_number):
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
-
-    # Define the order statuses and icons here (Python handles .split)
     order_status_list = [
         ("pending", "📋", "Pending"),
         ("confirmed", "✅", "Confirmed"),
@@ -320,35 +237,64 @@ def track_order(request, order_number):
         ("shipped", "🚚", "Shipped"),
         ("delivered", "📦", "Delivered"),
     ]
+    return render(request, "TrackOrder.html", {"order": order, "order_status_list": order_status_list})
 
-    return render(request, "TrackOrder.html", {
-        "order": order,
-        "order_status_list": order_status_list
-    })
-
+# ❌ Cancel Order
 @login_required
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    
     if order.order_status != 'cancelled':
         order.order_status = 'cancelled'
         order.save()
-        messages.success(request, f"Order #{order.order_number} has been cancelled.")
+        messages.success(request, f"Order #{order.order_number} cancelled.")
     else:
-        messages.info(request, f"Order #{order.order_number} is already cancelled.")
-    
+        messages.info(request, "Order already cancelled.")
     return redirect('my_orders')
 
-# ✅ Only admin can access this
+# ✅ Admin Views
+@user_passes_test(lambda u: u.is_staff)
+def admin_orders(request):
+    orders = Order.objects.all().order_by('-created_at')
+    return render(request, 'admin_orders.html', {'orders': orders})
+
 @user_passes_test(lambda u: u.is_staff)
 def admin_confirm_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-
     if order.order_status == 'pending':
         order.order_status = 'confirmed'
         order.save()
-        messages.success(request, f"Order #{order.order_number} has been confirmed by Admin.")
+        messages.success(request, f"Order #{order.order_number} confirmed by Admin.")
     else:
         messages.warning(request, f"Order #{order.order_number} cannot be confirmed (already {order.order_status}).")
+    return redirect('admin_orders')
 
-    return redirect('/admin/orders/')  # You can change this to your custom admin order list page
+
+@login_required
+@require_POST
+@csrf_exempt
+def create_razorpay_order(request):
+    try:
+        # Fetch amount from POST data (in paise)
+        amount = int(request.POST.get('amount', 0))
+        if amount <= 0:
+            return JsonResponse({'success': False, 'message': 'Invalid amount'}, status=400)
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+        # Create order in Razorpay
+        razorpay_order = client.order.create({
+            'amount': amount,
+            'currency': 'INR',
+            'payment_capture': '1'
+        })
+
+        # Return proper JSON
+        return JsonResponse({
+            'success': True,
+            'order_id': razorpay_order['id'],
+            'amount': amount,
+            'currency': 'INR'
+        })
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)

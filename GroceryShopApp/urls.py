@@ -22,4 +22,6 @@ urlpatterns = [
     path("track-order/<str:order_number>/", views.track_order, name="track_order"),
     path('cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),
     path('admin/confirm_order/<int:order_id>/', views.admin_confirm_order, name='admin_confirm_order'),
+    path('admin/orders/', views.admin_orders, name='admin_orders'),
+    path('admin/orders/confirm/<int:order_id>/', views.admin_confirm_order, name='admin_confirm_order'),
 ]

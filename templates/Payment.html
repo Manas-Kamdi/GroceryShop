@@ -393,7 +393,7 @@
                             <label>Select Payment Method</label>
                             <select id="payment_method" name="payment_method" required>
                                 <option value="">Choose payment method</option>
-                                <option value="razorpay">Credit/Debit Card (Razorpay)</option>
+                                <option value="razorpay">UPI (Online Payment)</option>
                                 <option value="cod">Cash on Delivery</option>
                             </select>
                         </div>
@@ -452,7 +452,7 @@
 
             <script>
         // Razorpay configuration
-        const RAZORPAY_KEY_ID = 'YOUR_RAZORPAY_KEY_ID'; // Replace with your actual Razorpay Key ID
+        const RAZORPAY_KEY_ID = 'rzp_live_RZLWxbScWFFLQq'; // Replace with your actual Razorpay Key ID
         
         // Auto-detect HTTPS/HTTP based on current protocol
         const WEBSITE_URL = window.location.protocol + '//' + window.location.host;
