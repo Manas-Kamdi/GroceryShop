@@ -2,325 +2,325 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment - GroceryShop</title>
-  {% load static %}
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - GroceryShop</title>
+    {% load static %}
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-  <style>
-    :root {
-      --bg: #f3faf9;
-      --text: #0b3f3a;
-      --brand: #0f766e;
-      --primary: #14b8a6;
-      --primary-hover: #0ea5a3;
-      --card-bg: #ffffff;
-      --border: #c7e7e2;
-    }
+    <style>
+        :root {
+            --bg: #f3faf9;
+            --text: #0b3f3a;
+            --brand: #0f766e;
+            --primary: #14b8a6;
+            --primary-hover: #0ea5a3;
+            --card-bg: #ffffff;
+            --border: #c7e7e2;
+        }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      font-family: "Poppins", system-ui, sans-serif;
-      color: var(--text);
-    }
+        body {
+            margin: 0;
+            background: var(--bg);
+            font-family: "Poppins", system-ui, sans-serif;
+            color: var(--text);
+        }
 
-    .container {
-      max-width: 1200px;
-      margin: 60px auto;
-      padding: 0 20px;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
 
-    .payment-header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
+        .payment-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-    .payment-header h1 {
-      color: var(--brand);
-      font-size: 2rem;
-      font-weight: 700;
-    }
+        .payment-header h1 {
+            color: var(--brand);
+            font-size: 2rem;
+            font-weight: 700;
+        }
 
-    .payment-header p {
-      color: #4b5563;
-    }
+        .payment-header p {
+            color: #4b5563;
+        }
 
-    .payment-content {
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 32px;
-    }
+        .payment-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 32px;
+        }
 
-    .payment-form,
-    .order-summary {
-      background: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-      padding: 24px;
-    }
+        .payment-form,
+        .order-summary {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+        }
 
-    .payment-form h3,
-    .order-summary h3 {
-      color: var(--brand);
-      margin-bottom: 16px;
-    }
+        .payment-form h3,
+        .order-summary h3 {
+            color: var(--brand);
+            margin-bottom: 16px;
+        }
 
-    input,
-    select {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.3s ease;
-    }
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
 
-    input:focus,
-    select:focus {
-      border-color: var(--primary);
-    }
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+        }
 
-    .btn-primary {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: var(--primary);
-      color: white;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
 
-    .btn-primary:hover {
-      background: var(--primary-hover);
-    }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
 
-    .btn-secondary {
-      display: inline-block;
-      padding: 12px 16px;
-      border-radius: 10px;
-      text-decoration: none;
-      background: #f3f4f6;
-      color: var(--text);
-      text-align: center;
-      margin-top: 10px;
-    }
+        .btn-secondary {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            background: #f3f4f6;
+            color: var(--text);
+            text-align: center;
+            margin-top: 10px;
+        }
 
-    .order-summary p {
-      margin: 8px 0;
-    }
+        .order-summary p {
+            margin: 8px 0;
+        }
 
-    hr {
-      border: 0;
-      border-top: 1px solid #e5e7eb;
-      margin: 16px 0;
-    }
+        hr {
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+            margin: 16px 0;
+        }
 
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 20px;
-    }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
 
-    .loading.show {
-      display: block;
-    }
+        .loading.show {
+            display: block;
+        }
 
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid var(--primary);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: auto;
-    }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
 
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
 
-      100% {
-        transform: rotate(360deg);
-      }
-    }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
-    @media (max-width: 900px) {
-      .payment-content {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+        @media (max-width: 900px) {
+            .payment-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  {% include 'Navbar.html' %}
-  <div class="container">
-    <div class="payment-header">
-      <h1>Payment & Checkout</h1>
-      <p>Complete your order securely</p>
-    </div>
-
-    <div class="payment-content">
-      <div class="payment-form">
-        <form id="paymentForm" method="post">
-          {% csrf_token %}
-          <h3>Delivery Details</h3>
-          <input type="text" id="delivery_name" name="delivery_name" placeholder="Full Name"
-            value="{{ user.first_name }} {{ user.last_name }}" required>
-          <input type="tel" id="delivery_phone" name="delivery_phone" placeholder="Phone"
-            value="{{ user.profile.phone|default:'' }}" required>
-          <input type="text" id="delivery_address" name="delivery_address" placeholder="Address"
-            value="{{ user.profile.address|default:'' }}" required>
-          <input type="text" id="delivery_area" name="delivery_area" placeholder="Area"
-            value="{{ user.profile.area|default:'' }}" required>
-          <input type="text" id="delivery_pincode" name="delivery_pincode" placeholder="Pincode"
-            value="{{ user.profile.pincode|default:'' }}" required>
-
-          <label>Payment Method</label>
-          <select id="payment_method" name="payment_method" required>
-            <option value="razorpay">UPI / Online Payment</option>
-            <option value="cod">Cash on Delivery</option>
-          </select>
-        </form>
-      </div>
-
-      <div class="order-summary">
-        <h3>Order Summary</h3>
-        {% for item in cart_items %}
-        <p>{{ item.product.name }} × {{ item.quantity }} = ₹{{ item.total_price|floatformat:2 }}</p>
-        {% endfor %}
-        <hr>
-        <p><b>Total: ₹{{ total_price|floatformat:2 }}</b></p>
-        <button class="btn-primary" onclick="processPayment()">Pay ₹{{ total_price|floatformat:2 }}</button>
-        <a href="{% url 'cart' %}" class="btn-secondary">Back to Cart</a>
-
-        <div id="loading" class="loading">
-          <div class="spinner"></div>
-          <p>Processing...</p>
+    {% include 'Navbar.html' %}
+    <div class="container">
+        <div class="payment-header">
+            <h1>Payment & Checkout</h1>
+            <p>Complete your order securely</p>
         </div>
-      </div>
+
+        <div class="payment-content">
+            <div class="payment-form">
+                <form id="paymentForm" method="post">
+                    {% csrf_token %}
+                    <h3>Delivery Details</h3>
+                    <input type="text" id="delivery_name" name="delivery_name" placeholder="Full Name"
+                        value="{{ user.first_name }} {{ user.last_name }}" required>
+                    <input type="tel" id="delivery_phone" name="delivery_phone" placeholder="Phone"
+                        value="{{ user.profile.phone|default:'' }}" required>
+                    <input type="text" id="delivery_address" name="delivery_address" placeholder="Address"
+                        value="{{ user.profile.address|default:'' }}" required>
+                    <input type="text" id="delivery_area" name="delivery_area" placeholder="Area"
+                        value="{{ user.profile.area|default:'' }}" required>
+                    <input type="text" id="delivery_pincode" name="delivery_pincode" placeholder="Pincode"
+                        value="{{ user.profile.pincode|default:'' }}" required>
+
+                    <label>Payment Method</label>
+                    <select id="payment_method" name="payment_method" required>
+                        <option value="razorpay">UPI / Online Payment</option>
+                        <option value="cod">Cash on Delivery</option>
+                    </select>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                {% for item in cart_items %}
+                <p>{{ item.product.name }} × {{ item.quantity }} = ₹{{ item.total_price|floatformat:2 }}</p>
+                {% endfor %}
+                <hr>
+                <p><b>Total: ₹{{ total_price|floatformat:2 }}</b></p>
+                <button class="btn-primary" onclick="processPayment()">Pay ₹{{ total_price|floatformat:2 }}</button>
+                <a href="{% url 'cart' %}" class="btn-secondary">Back to Cart</a>
+
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Processing...</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const RAZORPAY_KEY_ID = "{{ razorpay_key_id|default:'rzp_test_yourkey' }}";
+    <script>
+        const RAZORPAY_KEY_ID = "{{ razorpay_key_id|default:'rzp_test_yourkey' }}";
 
-    function processPayment() {
-      const method = document.getElementById("payment_method").value;
-      if (method === "razorpay") {
-        startRazorpayPayment();
-      } else {
-        startCOD();
-      }
-    }
-
-    function startRazorpayPayment() {
-      const amount = Math.round(parseFloat("{{ total_price }}") * 100);
-      const loading = document.getElementById("loading");
-      loading.classList.add("show");
-
-      fetch("{% url 'create_razorpay_order' %}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-        },
-        body: `amount=${amount}`,
-      })
-        .then(res => res.json())
-        .then(data => {
-          loading.classList.remove("show");
-          if (!data.success) {
-            alert("Error creating order: " + (data.message || "Unknown error"));
-            return;
-          }
-
-          const options = {
-            key: "rzp_live_RZLWxbScWFFLQq",
-            amount: amount,
-            currency: "INR",
-            name: "GroceryShop",
-            description: "Order Payment",
-            order_id: data.order_id,
-            handler: function (response) {
-              completePayment(response);
-            },
-            prefill: {
-              name: document.getElementById("delivery_name").value,
-              email: "{{ user.email }}",
-              contact: document.getElementById("delivery_phone").value,
-            },
-            theme: { color: "#14b8a6" },
-          };
-
-          const rzp = new Razorpay(options);
-          rzp.on("payment.failed", function (response) {
-            alert("Payment failed: " + response.error.description);
-          });
-          rzp.open();
-        })
-        .catch(err => {
-          loading.classList.remove("show");
-          console.error("Error:", err);
-          alert("Unable to connect to server. Try again later.");
-        });
-    }
-
-    function completePayment(response) {
-      const formData = new FormData(document.getElementById("paymentForm"));
-      formData.append("razorpay_payment_id", response.razorpay_payment_id);
-      formData.append("razorpay_order_id", response.razorpay_order_id);
-      formData.append("razorpay_signature", response.razorpay_signature);
-
-      fetch("{% url 'process_payment' %}", {
-        method: "POST",
-        headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value },
-        body: formData,
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            window.location.href = "{% url 'order_success' %}?order=" + data.order_number;
-          } else {
-            alert("Payment verification failed: " + data.message);
-          }
-        })
-        .catch(err => {
-          console.error("Error:", err);
-          alert("Server error verifying payment.");
-        });
-    }
-
-    function startCOD() {
-      if (confirm("Confirm Cash on Delivery order?")) {
-        const formData = new FormData(document.getElementById("paymentForm"));
-        formData.append("payment_method", "cod");
-
-        fetch("{% url 'process_payment' %}", {
-          method: "POST",
-          headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value },
-          body: formData,
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              window.location.href = "{% url 'order_success' %}?order=" + data.order_number;
+        function processPayment() {
+            const method = document.getElementById("payment_method").value;
+            if (method === "razorpay") {
+                startRazorpayPayment();
             } else {
-              alert("Order placement failed: " + data.message);
+                startCOD();
             }
-          });
-      }
-    }
-  </script>
+        }
+
+        function startRazorpayPayment() {
+            const amount = Math.round(parseFloat("{{ total_price }}") * 100);
+            const loading = document.getElementById("loading");
+            loading.classList.add("show");
+
+            fetch("{% url 'create_razorpay_order' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+                body: `amount=${amount}`,
+            })
+                .then(res => res.json())
+                .then(data => {
+                    loading.classList.remove("show");
+                    if (!data.success) {
+                        alert("Error creating order: " + (data.message || "Unknown error"));
+                        return;
+                    }
+
+                    const options = {
+                        key: "",
+                        amount: amount,
+                        currency: "INR",
+                        name: "GroceryShop",
+                        description: "Order Payment",
+                        order_id: data.order_id,
+                        handler: function (response) {
+                            completePayment(response);
+                        },
+                        prefill: {
+                            name: document.getElementById("delivery_name").value,
+                            email: "{{ user.email }}",
+                            contact: document.getElementById("delivery_phone").value,
+                        },
+                        theme: { color: "#14b8a6" },
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.on("payment.failed", function (response) {
+                        alert("Payment failed: " + response.error.description);
+                    });
+                    rzp.open();
+                })
+                .catch(err => {
+                    loading.classList.remove("show");
+                    console.error("Error:", err);
+                    alert("Unable to connect to server. Try again later.");
+                });
+        }
+
+        function completePayment(response) {
+            const formData = new FormData(document.getElementById("paymentForm"));
+            formData.append("razorpay_payment_id", response.razorpay_payment_id);
+            formData.append("razorpay_order_id", response.razorpay_order_id);
+            formData.append("razorpay_signature", response.razorpay_signature);
+
+            fetch("{% url 'process_payment' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value },
+                body: formData,
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "{% url 'order_success' %}?order=" + data.order_number;
+                    } else {
+                        alert("Payment verification failed: " + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                    alert("Server error verifying payment.");
+                });
+        }
+
+        function startCOD() {
+            if (confirm("Confirm Cash on Delivery order?")) {
+                const formData = new FormData(document.getElementById("paymentForm"));
+                formData.append("payment_method", "cod");
+
+                fetch("{% url 'process_payment' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value },
+                    body: formData,
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = "{% url 'order_success' %}?order=" + data.order_number;
+                        } else {
+                            alert("Order placement failed: " + data.message);
+                        }
+                    });
+            }
+        }
+    </script>
 </body>
 
 </html>
