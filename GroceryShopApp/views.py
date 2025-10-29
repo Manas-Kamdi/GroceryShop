@@ -41,25 +41,31 @@ def login(request):
 
 # 🧾 Signup Page
 def signup(request):
-    if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        number = request.POST.get("number")
-        address = request.POST.get("address")
-        password = request.POST.get("password")
-        c_password = request.POST.get("c-password")
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        number = request.POST['number']
+        address = request.POST['address']
+        password = request.POST['password']
+        confirm_password = request.POST['c-password']
 
-        if password != c_password:
-            messages.error(request, "Passwords do not match")
-        elif User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists")
-        else:
-            user = User.objects.create_user(username=email, email=email, password=password, first_name=name)
-            UserProfile.objects.create(user=user, phone=number, address=address)
-            Cart.objects.create(user=user)
-            messages.success(request, "Account created successfully! Please log in.")
-            return redirect("login")
-    return render(request, "Signup.html")
+        # check if email exists
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already exists! Please use a different one.")
+            return redirect('signup')
+
+        # check password match
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match!")
+            return redirect('signup')
+
+        # create user
+        user = User.objects.create_user(username=name, email=email, password=password)
+        user.save()
+        messages.success(request, "Account created successfully! Please log in.")
+        return redirect('login')
+
+    return render(request, 'signup.html')
 
 # 🚪 Logout
 def logout(request):
@@ -269,32 +275,38 @@ def admin_confirm_order(request, order_id):
     return redirect('admin_orders')
 
 
+
 @login_required
 @require_POST
 @csrf_exempt
 def create_razorpay_order(request):
-    try:
-        # Fetch amount from POST data (in paise)
-        amount = int(request.POST.get('amount', 0))
+    if request.method == "POST":
+        amount = int(request.POST.get("amount", 0))
         if amount <= 0:
-            return JsonResponse({'success': False, 'message': 'Invalid amount'}, status=400)
+            return JsonResponse({"success": False, "message": "Invalid amount"})
 
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        try:
+            client = razorpay.Client(
+                auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+            )
 
-        # Create order in Razorpay
-        razorpay_order = client.order.create({
-            'amount': amount,
-            'currency': 'INR',
-            'payment_capture': '1'
-        })
+            payment = client.order.create({
+                "amount": amount,
+                "currency": "INR",
+                "payment_capture": "1"
+            })
 
-        # Return proper JSON
-        return JsonResponse({
-            'success': True,
-            'order_id': razorpay_order['id'],
-            'amount': amount,
-            'currency': 'INR'
-        })
+            return JsonResponse({
+                "success": True,
+                "order_id": payment["id"],
+                "amount": amount,
+                "currency": "INR"
+            })
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+    return JsonResponse({"success": False, "message": "Invalid request"})
 
-    except Exception as e:
-        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+def order_success(request):
+    order_no = request.GET.get('order')
+    return render(request, 'order_success.html', {'order_no': order_no})
