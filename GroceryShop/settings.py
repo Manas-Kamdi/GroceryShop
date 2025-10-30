@@ -47,7 +47,7 @@ ROOT_URLCONF = 'GroceryShop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # templates folder
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # keep this line
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,8 +99,8 @@ USE_TZ = True
 # Static & Media Files
 # =========================
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR /'staticfiles'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'GroceryShopApp', 'static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
