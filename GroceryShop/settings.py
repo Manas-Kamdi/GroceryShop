@@ -11,7 +11,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-your-secret-ke
 # Detect if running on Render
 RENDER_ENV = os.environ.get('RENDER', None)
 if RENDER_ENV:
-    DEBUG = False
+    DEBUG = True
     ALLOWED_HOSTS = ['groceryshop-74h8.onrender.com']
 else:
     DEBUG = True
