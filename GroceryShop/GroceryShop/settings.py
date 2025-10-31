@@ -38,7 +38,7 @@ ROOT_URLCONF = 'GroceryShop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # add your templates folder
+        'DIRS': [BASE_DIR / 'templates'],   # add your templates folder
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
