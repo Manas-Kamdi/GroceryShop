@@ -11,7 +11,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-your-secret-ke
 # Detect if running on Render
 RENDER_ENV = os.environ.get('RENDER', None)
 if RENDER_ENV:
-    DEBUG = False
+    DEBUG = True
     ALLOWED_HOSTS = ['groceryshop-74h8.onrender.com']
 else:
     DEBUG = True
@@ -47,7 +47,7 @@ ROOT_URLCONF = 'GroceryShop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # keep this line
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # keep this line
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
