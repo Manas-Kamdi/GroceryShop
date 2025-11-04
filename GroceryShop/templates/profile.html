@@ -24,13 +24,25 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 48px auto;
             background: #ffffff;
             padding: 24px;
             border-radius: 12px;
             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
         }
+
+        /* Two-column layout for profile page */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+            align-items: start;
+        }
+
+    .profile-form { min-width: 0; }
+
+        aside.profile-info { padding: 16px; }
 
         .profile h1 {
             margin: 0 0 16px 0;
@@ -323,12 +335,14 @@
         </div>
         {% endif %}
 
-        <form method="post" action="{% url 'profile' %}" enctype="multipart/form-data">
+        <div class="profile-grid">
+            <div class="profile-form">
+                <form method="post" action="{% url 'profile' %}" enctype="multipart/form-data">
             {% csrf_token %}
             
             <div class="profile-photo-section">
-                {% if user.profile.profile_photo %}
-                    <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Photo" class="profile-photo" id="profilePhoto">
+                {% if profile.profile_photo %}
+                    <img src="{{ profile.profile_photo.url }}" alt="Profile Photo" class="profile-photo" id="profilePhoto">
                 {% else %}
                     <div class="profile-photo-placeholder" id="profilePhotoPlaceholder">
                         {{ user.first_name|first|default:user.username|first|upper }}
@@ -337,7 +351,7 @@
                 
                 <div class="photo-actions">
                     <label for="profile_photo" class="photo-upload-btn">Change Photo</label>
-                    {% if user.profile.profile_photo %}
+                    {% if profile.profile_photo %}
                         <button type="button" class="remove-photo-btn" onclick="removePhoto()">Remove</button>
                     {% endif %}
                 </div>
@@ -355,35 +369,36 @@
             <input type="email" id="email" name="email" value="{{ user.email|default_if_none:'' }}" readonly/>
 
             <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" value="{{ user.profile.phone|default_if_none:'' }}"/>
+            <input type="tel" id="phone" name="phone" value="{{ profile.phone|default_if_none:'' }}"/>
 
             <label for="address">Address</label>
-            <input type="text" placeholder="City" id="address" name="address" value="{{ user.profile.address|default_if_none:'' }}"/>
+            <input type="text" placeholder="City" id="address" name="address" value="{{ profile.address|default_if_none:'' }}"/>
             
             <label for="area">Area</label>
-            <input type="text" id="area" name="area" placeholder="Area" value="{{ user.profile.area|default_if_none:'' }}"/> 
+            <input type="text" id="area" name="area" placeholder="Area" value="{{ profile.area|default_if_none:'' }}"/> 
             
             <label for="landmark">Landmark</label>
-            <input type="text" id="landmark" name="landmark" placeholder="Landmark" value="{{ user.profile.landmark|default_if_none:'' }}"/>
+            <input type="text" id="landmark" name="landmark" placeholder="Landmark" value="{{ profile.landmark|default_if_none:'' }}"/>
             
             <label for="pincode">Pincode</label>
-            <input type="text" id="pincode" name="pincode" placeholder="Pincode" value="{{ user.profile.pincode|default_if_none:'' }}"/>
+            <input type="text" id="pincode" name="pincode" placeholder="Pincode" value="{{ profile.pincode|default_if_none:'' }}"/>
             
             <button type="submit" class="btn-primary">Update Profile</button>
-        </form>
+                </form>
+            </div>
 
-        <div class="profile-info">
+            <aside class="profile-info">
             <h3>Account Information</h3>
             <p><strong>Username:</strong> {{ user.username }}</p>
             <p><strong>Full Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Phone:</strong> {{ user.profile.phone|default:"Not provided" }}</p>
+            <p><strong>Phone:</strong> {{ profile.phone|default:"Not provided" }}</p>
             <p><strong>Address:</strong> 
-                {% if user.profile.address or user.profile.area or user.profile.landmark or user.profile.pincode %}
-                    {{ user.profile.address|default:"" }}
-                    {% if user.profile.area %}, {{ user.profile.area }}{% endif %}
-                    {% if user.profile.landmark %}, {{ user.profile.landmark }}{% endif %}
-                    {% if user.profile.pincode %} - {{ user.profile.pincode }}{% endif %}
+                {% if profile.address or profile.area or profile.landmark or profile.pincode %}
+                    {{ profile.address|default:"" }}
+                    {% if profile.area %}, {{ profile.area }}{% endif %}
+                    {% if profile.landmark %}, {{ profile.landmark }}{% endif %}
+                    {% if profile.pincode %} - {{ profile.pincode }}{% endif %}
                 {% else %}
                     Not provided
                 {% endif %}
@@ -408,17 +423,6 @@
                             <div class="stat-label">Cart Items</div>
                         </div>
                     </div>
-                    {% with recent_order=user.order_set.all|first %}
-                    {% if recent_order %}
-                    <div class="stat-item" onclick="window.location.href='{% url 'track_order' recent_order.order_number %}'">
-                        <div class="stat-icon">🚚</div>
-                        <div class="stat-info">
-                            <div class="stat-number">{{ recent_order.get_order_status_display }}</div>
-                            <div class="stat-label">Track Recent</div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endwith %}
                     <div class="stat-item">
                         <div class="stat-icon">⭐</div>
                         <div class="stat-info">
@@ -428,6 +432,7 @@
                     </div>
                 </div>
             </div>
+        </aside>
         </div>
     </div>
 
@@ -442,52 +447,25 @@
                     return;
                 }
                 
-                // Validate file size (max 2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Image size should be less than 2MB.');
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB.');
                     input.value = '';
                     return;
                 }
                 
-                // Compress image if it's too large
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
+                const reader = new FileReader();
                 
-                img.onload = function() {
-                    // Calculate new dimensions (max 400x400)
-                    let { width, height } = img;
-                    const maxSize = 400;
-                    
-                    if (width > height) {
-                        if (width > maxSize) {
-                            height = (height * maxSize) / width;
-                            width = maxSize;
-                        }
-                    } else {
-                        if (height > maxSize) {
-                            width = (width * maxSize) / height;
-                            height = maxSize;
-                        }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    // Draw and compress
-                    ctx.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                    
-                    // Update the image display
+                reader.onload = function(e) {
                     const profilePhoto = document.getElementById('profilePhoto');
                     const profilePhotoPlaceholder = document.getElementById('profilePhotoPlaceholder');
                     
                     if (profilePhoto) {
-                        profilePhoto.src = compressedDataUrl;
+                        profilePhoto.src = e.target.result;
                     } else {
                         // Create new image element if placeholder exists
                         const newImg = document.createElement('img');
-                        newImg.src = compressedDataUrl;
+                        newImg.src = e.target.result;
                         newImg.alt = 'Profile Photo';
                         newImg.className = 'profile-photo';
                         newImg.id = 'profilePhoto';
@@ -516,9 +494,7 @@
                     }
                 };
                 
-                img.src = URL.createObjectURL(file);
-                
-                // The image processing is handled above
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
