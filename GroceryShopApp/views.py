@@ -65,7 +65,7 @@ def signup(request):
         messages.success(request, "Account created successfully! Please log in.")
         return redirect('login')
 
-    return render(request, 'signup.html')
+    return render(request, 'Signup.html')
 
 # 🚪 Logout
 def logout(request):
