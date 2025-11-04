@@ -529,12 +529,12 @@
                             color: '#14b8a6'
                         },
                         modal: {
-                            ondismiss: function() {
-                                loading.classList.remove('show');
-                            }
-                        },
-                        callback_url: WEBSITE_URL + '/payment-success/',
-                        redirect: true
+                                ondismiss: function() {
+                                    loading.classList.remove('show');
+                                }
+                            },
+                            // Use client-side handler (no redirect) so our app can call process_payment
+                            redirect: false
                     };
                     
                     const rzp = new Razorpay(options);
