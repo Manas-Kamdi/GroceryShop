@@ -229,8 +229,14 @@ def process_payment(request):
 # 📦 My Orders
 @login_required
 def my_orders(request):
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, "my_orders.html", {"orders": orders})
+    # Ensure newest orders appear first and prefetch related items for fewer DB queries
+    orders = (
+        Order.objects.filter(user=request.user)
+        .order_by('-created_at', '-id')
+        .prefetch_related('orderitem_set__product')
+    )
+    orders_count = orders.count()
+    return render(request, "my_orders.html", {"orders": orders, "orders_count": orders_count})
 
 # 🚚 Track Order
 @login_required

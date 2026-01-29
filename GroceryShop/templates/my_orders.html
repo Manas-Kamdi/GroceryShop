@@ -311,6 +311,9 @@
         <div class="orders-header">
             <h1>My Orders</h1>
             <p>Track your order history and status</p>
+            {% if orders_count is not None %}
+            <p style="margin-top:8px;color:#6b7280;font-size:14px;">Showing <strong>{{ orders_count }}</strong> order{{ orders_count|pluralize }}</p>
+            {% endif %}
         </div>
 
         {% if messages %}
@@ -327,7 +330,7 @@
             <div class="order-card">
                 <div class="order-header">
                     <div class="order-info">
-                        <h3>Order #{{ order.order_number }}</h3>
+                        <h3>Order #{{ order.order_number }} {% if forloop.first %}<small style="font-size:12px;color:#065f46;margin-left:8px;">(Latest)</small>{% endif %}</h3>
                         <div class="order-meta">
                             <span>Placed on {{ order.created_at|date:"M d, Y" }}</span>
                             <span>•</span>
