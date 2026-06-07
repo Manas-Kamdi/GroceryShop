@@ -85,12 +85,16 @@
                 <span style="font-weight:800; color:var(--brand-primary);">₹{{ order.total_amount }}</span>
             </div>
             <div class="summary-row" style="margin-bottom:12px;">
+                <span style="font-size:0.9rem; color:var(--text-muted);">Payment Method:</span>
+                <span style="font-weight:600; color:var(--text-main);">{{ order.get_payment_method_display }}</span>
+            </div>
+            <div class="summary-row" style="margin-bottom:12px;">
                 <span style="font-size:0.9rem; color:var(--text-muted);">Payment Status:</span>
                 <span>
                     {% if order.payment_status == 'paid' %}
                     <span class="badge badge-success">Paid</span>
                     {% else %}
-                    <span class="badge badge-warning">Unpaid</span>
+                    <span class="badge badge-warning">Pending</span>
                     {% endif %}
                 </span>
             </div>
@@ -154,6 +158,21 @@
         </div>
         {% endif %}
     </div>
+
+    <!-- Delivery OTP Verification -->
+    {% if order.order_status != 'delivered' and order.order_status != 'cancelled' %}
+    <div class="card mb-4" style="padding: 32px 24px; border: 1.5px dashed var(--brand-primary); background-color: rgba(82, 95, 235, 0.02); text-align: center; box-shadow: var(--shadow-sm);">
+        <h3 style="font-size: 1.25rem; margin-bottom: 8px; color: var(--brand-primary);">
+            <i class="fa-solid fa-key"></i> Delivery Verification OTP
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
+            Please share this OTP with the delivery partner upon arrival to confirm and complete your order delivery.
+        </p>
+        <div style="font-family: var(--font-headings); font-size: 2.2rem; font-weight: 800; color: var(--brand-primary); letter-spacing: 0.15em; background-color: #ffffff; padding: 10px 24px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); display: inline-block; box-shadow: var(--shadow-sm);">
+            {{ order.delivery_otp|default:"-" }}
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Items summary table -->
     <div class="card" style="padding: 24px; margin-bottom:32px;">

@@ -171,8 +171,14 @@
                                 <p>{{ order.delivery_address }}, {{ order.delivery_area }}</p>
                             </div>
                             <div class="address-item">
-                                <h5>Pincode</h5>
-                                <p>{{ order.delivery_pincode }}</p>
+                                <h5>Payment Method</h5>
+                                <p>
+                                    {% if order.payment_method == 'cod' %}
+                                    <span class="badge badge-warning" style="font-size:0.85rem;"><i class="fa-solid fa-hand-holding-dollar"></i> Cash on Delivery</span>
+                                    {% else %}
+                                    <span class="badge badge-success" style="font-size:0.85rem;"><i class="fa-solid fa-credit-card"></i> Paid Online</span>
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
 
@@ -231,6 +237,16 @@
                             <div class="address-item">
                                 <h5>Address Details</h5>
                                 <p>{{ order.delivery_address }}, {{ order.delivery_area }}{% if order.delivery_landmark %}, {{ order.delivery_landmark }}{% endif %}</p>
+                            </div>
+                            <div class="address-item">
+                                <h5>Payment Info</h5>
+                                <p>
+                                    {% if order.payment_method == 'cod' %}
+                                    <span class="badge badge-warning" style="font-size:0.85rem;"><i class="fa-solid fa-hand-holding-dollar"></i> Collect ₹{{ order.total_amount }}</span>
+                                    {% else %}
+                                    <span class="badge badge-success" style="font-size:0.85rem;"><i class="fa-solid fa-credit-card"></i> Paid Online</span>
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
 
@@ -356,26 +372,90 @@
         });
     }
 
+    // Load SweetAlert2 dynamically
+    const swalScript = document.createElement('script');
+    swalScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+    document.head.appendChild(swalScript);
+
     function updateStatus(orderId, status, orderNum) {
-        const actionText = status === 'shipped' ? 'mark as shipped (out for delivery)' : 'mark as successfully delivered';
-        showConfirm(`Are you sure you want to ${actionText} order #${orderNum}?`, 'Update Status', () => {
-            fetch(`/delivery/update-status/${orderId}/${status}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCsrfToken(),
-                    'Content-Type': 'application/json'
+        if (status === 'delivered') {
+            Swal.fire({
+                title: 'Enter Verification OTP',
+                text: 'Please ask the customer for the 4-digit verification code shown on their tracking page.',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    maxlength: 4,
+                    placeholder: 'XXXX',
+                    style: 'text-align: center; font-size: 1.6rem; letter-spacing: 0.2em; font-weight: bold; width: 160px; margin: 15px auto;'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Verify & Deliver',
+                confirmButtonColor: '#14b8a6',
+                showLoaderOnConfirm: true,
+                preConfirm: (otp) => {
+                    if (!otp || otp.length !== 4 || isNaN(otp)) {
+                        Swal.showValidationMessage('Please enter a valid 4-digit numeric OTP');
+                        return false;
+                    }
+                    return fetch(`/delivery/update-status/${orderId}/delivered/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCsrfToken(),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ otp: otp })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!data.success) {
+                            Swal.showValidationMessage(data.error || 'Invalid OTP');
+                        }
+                        return data;
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Request failed: ${error}`);
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed && result.value && result.value.success) {
+                    Swal.fire({
+                        title: 'Delivered Successfully!',
+                        text: `Order #${orderNum} has been marked as delivered.`,
+                        icon: 'success',
+                        confirmButtonColor: '#14b8a6'
+                    }).then(() => {
+                        window.location.reload();
+                    });
                 }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    showError(data.error || 'Failed to update order status');
-                }
-            })
-            .catch(() => showError('An unexpected error occurred.'));
-        });
+            });
+        } else {
+            const actionText = 'mark as shipped (out for delivery)';
+            showConfirm(`Are you sure you want to ${actionText} order #${orderNum}?`, 'Update Status', () => {
+                fetch(`/delivery/update-status/${orderId}/${status}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        showError(data.error || 'Failed to update order status');
+                    }
+                })
+                .catch(() => showError('An unexpected error occurred.'));
+            });
+        }
     }
 </script>
 <!-- A hidden CSRF token for AJAX scripts -->

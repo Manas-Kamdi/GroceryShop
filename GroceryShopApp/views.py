@@ -209,6 +209,12 @@ def process_payment(request):
     total_amount = sum(item.total_price for item in cart_items)
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
 
+    payment_method = request.POST.get("payment_method", "razorpay")
+    payment_status = "pending" if payment_method == "cod" else "paid"
+    
+    import random
+    otp = str(random.randint(1000, 9999))
+
     order = Order.objects.create(
         user=request.user,
         order_number=order_number,
@@ -219,7 +225,9 @@ def process_payment(request):
         delivery_area=request.POST.get("delivery_area", profile.area),
         delivery_landmark=request.POST.get("delivery_landmark", profile.landmark),
         delivery_pincode=request.POST.get("delivery_pincode", profile.pincode),
-        payment_status="paid",
+        payment_status=payment_status,
+        payment_method=payment_method,
+        delivery_otp=otp,
     )
 
     for cart_item in cart_items:
@@ -393,9 +401,28 @@ def delivery_update_status(request, order_id, status):
     if status not in ['shipped', 'delivered']:
         return JsonResponse({"success": False, "error": "Invalid delivery status update"})
 
-    order.order_status = status
     if status == 'delivered':
+        otp = None
+        if request.content_type == 'application/json':
+            try:
+                data = json.loads(request.body)
+                otp = data.get('otp')
+            except Exception:
+                pass
+        else:
+            otp = request.POST.get('otp')
+
+        if not otp:
+            return JsonResponse({"success": False, "error": "OTP is required for delivery confirmation."})
+        
+        if order.delivery_otp and otp != order.delivery_otp:
+            return JsonResponse({"success": False, "error": "Invalid OTP. Please enter the correct verification code."})
+
+        order.order_status = status
         order.payment_status = 'paid'
+    else:
+        order.order_status = status
+
     order.save()
     
     messages.success(request, f"Order #{order.order_number} status updated to {status.capitalize()}!")

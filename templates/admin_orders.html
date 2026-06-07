@@ -44,8 +44,15 @@
                         {% if order.payment_status == 'paid' %}
                         <span class="badge badge-success">Paid</span>
                         {% else %}
-                        <span class="badge badge-danger">Unpaid</span>
+                        <span class="badge badge-warning">Pending</span>
                         {% endif %}
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; font-weight: 500;">
+                            {% if order.payment_method == 'cod' %}
+                            <i class="fa-solid fa-hand-holding-dollar"></i> COD
+                            {% else %}
+                            <i class="fa-solid fa-credit-card"></i> Online
+                            {% endif %}
+                        </div>
                     </td>
                     <td>
                         {% if order.delivery_boy %}

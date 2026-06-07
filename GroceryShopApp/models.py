@@ -73,12 +73,19 @@ class Order(models.Model):
         ('refunded', 'Refunded'),
     ]
     
+    PAYMENT_METHOD_CHOICES = [
+        ('razorpay', 'Online Payment (Razorpay)'),
+        ('cod', 'Cash on Delivery (COD)'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_number = models.CharField(max_length=20, unique=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     order_status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
     payment_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='razorpay')
+    delivery_otp = models.CharField(max_length=6, blank=True, null=True)
     delivery_boy = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='deliveries')
     
     # Delivery Address

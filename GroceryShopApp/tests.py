@@ -72,11 +72,12 @@ class DeliveryBoyTests(TestCase):
     def test_update_delivery_status(self):
         self.order.delivery_boy = self.delivery_user
         self.order.order_status = "processing"
+        self.order.delivery_otp = "1234"
         self.order.save()
         
         self.client.login(username="deliveryboy", password="password123")
         
-        # Update to shipped
+        # Update to shipped (does not require OTP)
         response = self.client.post(reverse("delivery_update_status", args=[self.order.id, "shipped"]))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["success"])
@@ -84,8 +85,27 @@ class DeliveryBoyTests(TestCase):
         self.order.refresh_from_db()
         self.assertEqual(self.order.order_status, "shipped")
         
-        # Update to delivered
+        # Update to delivered with no OTP (should fail)
         response = self.client.post(reverse("delivery_update_status", args=[self.order.id, "delivered"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("OTP is required", response.json()["error"])
+
+        # Update to delivered with wrong OTP (should fail)
+        response = self.client.post(
+            reverse("delivery_update_status", args=[self.order.id, "delivered"]),
+            data=dict(otp="0000")
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("Invalid OTP", response.json()["error"])
+        
+        # Update to delivered with correct OTP (should succeed)
+        response = self.client.post(
+            reverse("delivery_update_status", args=[self.order.id, "delivered"]),
+            data=dict(otp="1234"),
+            content_type="application/json"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["success"])
         
