@@ -1,167 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Product - GroceryShop</title>
-    <style>
-        :root {
-            --bg: #f3faf9;
-            --text: #0b3f3a;
-            --brand: #0f766e;
-            --primary: #14b8a6;
-            --primary-strong: #0ea5a3;
-            --on-primary: #062a27;
-            --field: #ffffff;
-            --field-border: #c7e7e2;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-            background: var(--bg);
-            color: var(--text);
-        }
+{% block title %}Add Product - GroceryShop{% endblock %}
 
-        .container {
-            max-width: 600px;
-            margin: 48px auto;
-            background: #ffffff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
-        }
+{% block content %}
+<div class="container mt-4 mb-4" style="max-width: 680px;">
+    <!-- Back to products link -->
+    <a href="{% url 'products' %}" class="btn btn-outline btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left"></i> Back to Products
+    </a>
 
-        .page-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .page-title {
-            font-size: 28px;
-            color: var(--brand);
-            margin: 0 0 8px 0;
-        }
-
-        .page-subtitle {
-            color: #6b7280;
-            margin: 0;
-        }
-
-        form {
-            display: grid;
-            gap: 16px;
-        }
-
-        .form-group {
-            display: grid;
-            gap: 8px;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="file"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--field-border);
-            border-radius: 8px;
-            background: var(--field);
-            color: var(--text);
-            outline: none;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 12px 16px;
-            border: none;
-            border-radius: 8px;
-            background: var(--primary);
-            color: var(--on-primary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 160ms ease, transform 80ms ease;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-strong);
-        }
-
-        .btn-primary:active {
-            transform: translateY(1px);
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 16px;
-            color: var(--brand);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    {% include 'Navbar.html' %}
-    
-    <div class="container">
-        <a href="{% url 'products' %}" class="back-link">← Back to Products</a>
-        
-        <div class="page-header">
-            <h1 class="page-title">Add New Product</h1>
-            <p class="page-subtitle">Add a new product to the store</p>
+    <!-- Form Card -->
+    <div class="card">
+        <div class="auth-header">
+            <h1 class="auth-title">Add New Product</h1>
+            <p class="section-subtitle">Introduce a new item to your storefront catalog</p>
         </div>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            
+
             <div class="form-group">
-                <label for="name">Product Name *</label>
-                <input type="text" id="name" name="name" placeholder="Enter product name" required/>
+                <label for="name"><i class="fa-solid fa-tag label-icon"></i> Product Name *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Fresh Organic Tomatoes"
+                    required>
             </div>
 
             <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" placeholder="Enter product description"></textarea>
+                <label for="description"><i class="fa-solid fa-align-left label-icon"></i> Description</label>
+                <textarea id="description" name="description" class="form-control"
+                    placeholder="Provide a brief summary of this product (origin, weight, benefits, etc.)"></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="form-group">
+                    <label for="price"><i class="fa-solid fa-indian-rupee-sign label-icon"></i> Price (₹) *</label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" class="form-control"
+                        placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="stock_quantity"><i class="fa-solid fa-cubes label-icon"></i> Initial Stock
+                        Quantity</label>
+                    <input type="number" id="stock_quantity" name="stock_quantity" min="0" class="form-control"
+                        placeholder="0" value="0">
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="price">Price (₹) *</label>
-                <input type="number" id="price" name="price" step="0.01" min="0" placeholder="0.00" required/>
-            </div>
-
-            <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" name="category">
+                <label for="category"><i class="fa-solid fa-layer-group label-icon"></i> Category</label>
+                <select id="category" name="category" class="form-control">
                     <option value="">Select Category</option>
                     <option value="Fruits & Vegetables">Fruits & Vegetables</option>
                     <option value="Dairy & Eggs">Dairy & Eggs</option>
@@ -177,17 +65,90 @@
             </div>
 
             <div class="form-group">
-                <label for="stock_quantity">Stock Quantity</label>
-                <input type="number" id="stock_quantity" name="stock_quantity" min="0" placeholder="0" value="0"/>
+                <label><i class="fa-solid fa-image label-icon"></i> Product Image</label>
+                <div class="image-upload-dropzone" id="dropzone" onclick="document.getElementById('image').click()">
+                    <div class="dropzone-placeholder" id="dropzonePlaceholder">
+                        <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                        <p class="dropzone-text">Click to choose image file</p>
+                        <span class="dropzone-hint">Supports JPEG, PNG, WEBP (Max 2MB)</span>
+                    </div>
+                    <img id="imagePreview" class="dropzone-preview" style="display: none;" alt="Product Preview">
+                    <input type="file" id="image" name="image" accept="image/*" style="display: none;"
+                        onchange="previewProductImage(this)">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="image">Product Image</label>
-                <input type="file" id="image" name="image" accept="image/*"/>
-            </div>
-
-            <button type="submit" class="btn-primary">Add Product</button>
+            <button type="submit" class="btn btn-primary btn-lg mt-3" style="width: 100%;">
+                Publish Product <i class="fa-solid fa-cloud-arrow-up"></i>
+            </button>
         </form>
     </div>
-</body>
-</html>
+</div>
+
+<script>
+    function previewProductImage(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select a valid image file.', 'error');
+                input.value = '';
+                return;
+            }
+
+            // Limit to 2MB validation
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image size should be less than 2MB.', 'error');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const preview = document.getElementById('imagePreview');
+                const placeholder = document.getElementById('dropzonePlaceholder');
+
+                if (preview && placeholder) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Helper toast alerts
+    function showToast(message, type = 'info') {
+        const container = document.querySelector('.messages-container') || document.createElement('div');
+        if (!container.className) {
+            container.className = 'messages-container';
+            document.body.appendChild(container);
+        }
+
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+
+        const icons = {
+            success: '<i class="fa-solid fa-circle-check"></i>',
+            error: '<i class="fa-solid fa-circle-exclamation"></i>',
+            warning: '<i class="fa-solid fa-triangle-exclamation"></i>',
+            info: '<i class="fa-solid fa-circle-info"></i>'
+        };
+
+        alert.innerHTML = `
+            <span class="alert-icon">${icons[type] || icons.info}</span>
+            <span class="alert-text">${message}</span>
+            <button type="button" class="alert-close-btn" onclick="this.parentElement.remove()">&times;</button>
+        `;
+
+        container.appendChild(alert);
+
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            alert.style.transition = 'all 0.5s ease';
+            setTimeout(() => alert.remove(), 500);
+        }, 5000);
+    }
+</script>
+{% endblock %}

@@ -1,242 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - GroceryShop</title>
-    {% load static %}
-    <style>
-        :root {
-            --bg: #f3faf9;
-            --text: #0b3f3a;
-            --brand: #0f766e;
-            --primary: #14b8a6;
-            --primary-strong: #0ea5a3;
-            --on-primary: #062a27;
-            --field: #ffffff;
-            --field-border: #c7e7e2;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-            background: var(--bg);
-            color: var(--text);
-        }
+{% block title %}Dashboard - GroceryShop{% endblock %}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-
-        .welcome-section {
-            background: linear-gradient(135deg, var(--brand) 0%, var(--primary) 100%);
-            color: white;
-            padding: 48px;
-            border-radius: 12px;
-            margin-bottom: 32px;
-            text-align: center;
-        }
-
-        .welcome-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin: 0 0 16px 0;
-        }
-
-        .welcome-subtitle {
-            font-size: 18px;
-            opacity: 0.9;
-            margin: 0 0 32px 0;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .dashboard-card {
-            background: var(--field);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--brand);
-            margin: 0 0 16px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .card-icon {
-            font-size: 24px;
-        }
-
-        .card-content {
-            color: #6b7280;
-            line-height: 1.6;
-            margin: 0 0 20px 0;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-primary {
-            padding: 10px 20px;
-            background: var(--primary);
-            color: var(--on-primary);
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: background-color 160ms ease;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-strong);
-        }
-
-        .btn-secondary {
-            padding: 10px 20px;
-            background: transparent;
-            color: var(--brand);
-            text-decoration: none;
-            border: 2px solid var(--brand);
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 160ms ease;
-        }
-
-        .btn-secondary:hover {
-            background: var(--brand);
-            color: white;
-        }
-
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: var(--field);
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid var(--field-border);
-        }
-
-        .stat-number {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0 0 8px 0;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #6b7280;
-            margin: 0;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .quick-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
-</head>
-<body>
-    {% include 'Navbar.html' %}
-    
-    <div class="container">
-        <div class="welcome-section">
-            <h1 class="welcome-title">Welcome back, {{ user.first_name|default:user.username }}!</h1>
-            <p class="welcome-subtitle">Ready to shop for fresh groceries?</p>
+{% block content %}
+<div class="container mt-4 mb-4">
+    <!-- Welcome Premium Header Card -->
+    <div class="card" style="background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-light) 60%, var(--brand-accent) 100%); color: white; padding: 48px; border: none; text-align: center; margin-bottom: 32px; box-shadow: var(--shadow-lg);">
+        <h1 style="color: white; font-size: 2.5rem; margin-bottom: 12px; font-weight: 800;">
+            Welcome back, {{ user.first_name|default:user.username }}!
+        </h1>
+        <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.15rem; max-width: 600px; margin: 0 auto 24px auto;">
+            Manage your profile, view orders, or start shopping for fresh organic groceries right away.
+        </p>
+        <div class="hero-cta" style="justify-content: center;">
+            <a href="{% url 'products' %}" class="btn btn-primary">
+                Shop Now <i class="fa-solid fa-basket-shopping"></i>
+            </a>
+            <a href="{% url 'profile' %}" class="btn btn-outline" style="border-color: white; color: white;">
+                Manage Profile <i class="fa-solid fa-user-pen"></i>
+            </a>
         </div>
+    </div>
 
-        <div class="quick-stats">
-            <div class="stat-card">
-                <div class="stat-number">{{ user.order_set.count|default:0 }}</div>
-                <div class="stat-label">Total Orders</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ user.cart.cartitem_set.count|default:0 }}</div>
-                <div class="stat-label">Items in Cart</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ user.date_joined|timesince }}</div>
-                <div class="stat-label">Member Since</div>
+    <!-- Quick Stats Cards Row -->
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 40px;">
+        <div class="stat-card" onclick="window.location.href='{% url 'my_orders' %}'">
+            <div class="stat-card-icon"><i class="fa-solid fa-receipt"></i></div>
+            <div class="stat-card-info">
+                <div class="stat-card-num">{{ user.order_set.count|default:0 }}</div>
+                <div class="stat-card-label">Total Orders</div>
             </div>
         </div>
-
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <h3 class="card-title">
-                    <span class="card-icon">🛒</span>
-                    Shopping Cart
-                </h3>
-                <p class="card-content">View and manage your cart items. Add or remove products before checkout.</p>
-                <div class="card-actions">
-                    <a href="{% url 'cart' %}" class="btn-primary">View Cart</a>
-                </div>
+        
+        <div class="stat-card" onclick="window.location.href='{% url 'cart' %}'">
+            <div class="stat-card-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            <div class="stat-card-info">
+                <div class="stat-card-num">{{ user.cart.cartitem_set.count|default:0 }}</div>
+                <div class="stat-card-label">Cart Items</div>
             </div>
-
-            <div class="dashboard-card">
-                <h3 class="card-title">
-                    <span class="card-icon">🛍️</span>
-                    Browse Products
-                </h3>
-                <p class="card-content">Explore our wide range of fresh groceries, fruits, vegetables, and more.</p>
-                <div class="card-actions">
-                    <a href="{% url 'products' %}" class="btn-primary">Shop Now</a>
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <h3 class="card-title">
-                    <span class="card-icon">📦</span>
-                    My Orders
-                </h3>
-                <p class="card-content">Track your order history and current order status.</p>
-                <div class="card-actions">
-                    <a href="{% url 'my_orders' %}" class="btn-primary">View Orders</a>
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <h3 class="card-title">
-                    <span class="card-icon">👤</span>
-                    Profile Settings
-                </h3>
-                <p class="card-content">Update your personal information, address, and profile photo.</p>
-                <div class="card-actions">
-                    <a href="{% url 'profile' %}" class="btn-secondary">Edit Profile</a>
-                </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-card-info">
+                <div class="stat-card-num" style="font-size:0.95rem;">Active Member</div>
+                <div class="stat-card-label">Joined {{ user.date_joined|date:"M Y" }}</div>
             </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Dashboard Quick Links Grid -->
+    <div class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+        <!-- Card 1: Cart -->
+        <div class="card" style="display:flex; flex-direction:column; padding: 28px;">
+            <div style="font-size: 2.2rem; color: var(--brand-accent); margin-bottom: 16px;"><i class="fa-solid fa-cart-shopping"></i></div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 12px; font-weight: 700;">Shopping Cart</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 24px; flex-grow: 1;">View and modify your selected products. Review item weights, counts and total cost before paying.</p>
+            <a href="{% url 'cart' %}" class="btn btn-primary btn-sm" style="width: 100%; margin-top: auto;">
+                View Cart <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Card 2: Browse -->
+        <div class="card" style="display:flex; flex-direction:column; padding: 28px;">
+            <div style="font-size: 2.2rem; color: var(--brand-accent); margin-bottom: 16px;"><i class="fa-solid fa-shop"></i></div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 12px; font-weight: 700;">Explore Groceries</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 24px; flex-grow: 1;">Explore our organic farm vegetables, dairy, eggs, meat, bakery items, hygiene products and more.</p>
+            <a href="{% url 'products' %}" class="btn btn-primary btn-sm" style="width: 100%; margin-top: auto;">
+                Shop Groceries <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Card 3: Orders -->
+        <div class="card" style="display:flex; flex-direction:column; padding: 28px;">
+            <div style="font-size: 2.2rem; color: var(--brand-accent); margin-bottom: 16px;"><i class="fa-solid fa-box"></i></div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 12px; font-weight: 700;">My Orders</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 24px; flex-grow: 1;">View your order history, track deliveries, view status updates, and request cancellations.</p>
+            <a href="{% url 'my_orders' %}" class="btn btn-primary btn-sm" style="width: 100%; margin-top: auto;">
+                View Orders <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Card 4: Settings -->
+        <div class="card" style="display:flex; flex-direction:column; padding: 28px;">
+            <div style="font-size: 2.2rem; color: var(--brand-accent); margin-bottom: 16px;"><i class="fa-solid fa-user-gear"></i></div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 12px; font-weight: 700;">Profile Settings</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 24px; flex-grow: 1;">Manage your recipient name, contact phone number, delivery address, pincode, and profile avatar photo.</p>
+            <a href="{% url 'profile' %}" class="btn btn-outline btn-sm" style="width: 100%; margin-top: auto;">
+                Edit Details <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Card 5: Delivery Dashboard -->
+        {% if user.userprofile.is_delivery_boy %}
+        <div class="card" style="display:flex; flex-direction:column; padding: 28px; border: 1.5px dashed var(--brand-primary);">
+            <div style="font-size: 2.2rem; color: var(--brand-primary); margin-bottom: 16px;"><i class="fa-solid fa-truck-ramp-box"></i></div>
+            <h3 style="font-size: 1.25rem; margin-bottom: 12px; font-weight: 700; color: var(--brand-primary);">Delivery Dashboard</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 24px; flex-grow: 1;">View available orders, manage active shipments, update order statuses to customers, and track your completed deliveries.</p>
+            <a href="{% url 'delivery_dashboard' %}" class="btn btn-primary btn-sm" style="width: 100%; margin-top: auto;">
+                Delivery Dashboard <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

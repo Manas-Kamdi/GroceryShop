@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from .models import Product, Cart, CartItem, Order, OrderItem, UserProfile
 import uuid
 import razorpay
@@ -104,8 +104,9 @@ def about(request):
     return render(request, "About.html")
 
 # 🛒 Cart Page
-@login_required
 def cart(request):
+    if not request.user.is_authenticated:
+        return render(request, "Cart.html", {"is_guest": True})
     cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_items = CartItem.objects.filter(cart=cart)
     total_items = sum(item.quantity for item in cart_items)
@@ -193,7 +194,7 @@ def payment(request):
         return redirect("cart")
     total_items = sum(item.quantity for item in cart_items)
     total_price = sum(item.total_price for item in cart_items)
-    return render(request, "Payment.html", {"cart_items": cart_items, "total_price": total_price})
+    return render(request, "Payment.html", {"cart_items": cart_items, "total_price": total_price, "razorpay_key_id": settings.RAZORPAY_KEY_ID})
 
 # 💰 Process Payment
 @login_required
@@ -310,3 +311,93 @@ def create_razorpay_order(request):
 def order_success(request):
     order_no = request.GET.get('order')
     return render(request, 'order_success.html', {'order_no': order_no})
+
+
+# ==========================================
+# 🚚 DELIVERY PARTNER (DELIVERY BOY) VIEWS
+# ==========================================
+
+@login_required
+@require_POST
+def toggle_delivery_status(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    profile.is_delivery_boy = not profile.is_delivery_boy
+    profile.save()
+    if profile.is_delivery_boy:
+        messages.success(request, "🎉 You are now registered as a Delivery Partner!")
+        return redirect("delivery_dashboard")
+    else:
+        messages.success(request, "Opted out from the Delivery Partner program.")
+        return redirect("profile")
+
+
+@login_required
+def delivery_dashboard(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if not profile.is_delivery_boy:
+        messages.error(request, "You need to register as a Delivery Partner first.")
+        return redirect("profile")
+
+    available_orders = Order.objects.filter(
+        order_status='confirmed',
+        delivery_boy__isnull=True
+    ).order_by('-created_at')
+
+    active_deliveries = Order.objects.filter(
+        delivery_boy=request.user,
+        order_status__in=['confirmed', 'processing', 'shipped']
+    ).order_by('-updated_at')
+
+    completed_deliveries = Order.objects.filter(
+        delivery_boy=request.user,
+        order_status='delivered'
+    ).order_by('-updated_at')
+
+    return render(request, "delivery_dashboard.html", {
+        "profile": profile,
+        "available_orders": available_orders,
+        "active_deliveries": active_deliveries,
+        "completed_deliveries": completed_deliveries,
+    })
+
+
+@login_required
+@require_POST
+def delivery_accept_order(request, order_id):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if not profile.is_delivery_boy:
+        return JsonResponse({"success": False, "error": "Not registered as a delivery partner"})
+
+    order = get_object_or_404(Order, id=order_id)
+    if order.delivery_boy is not None:
+        return JsonResponse({"success": False, "error": "Order already accepted by another delivery partner"})
+
+    if order.order_status != 'confirmed':
+        return JsonResponse({"success": False, "error": f"Order status is {order.order_status}. It must be Confirmed to accept."})
+
+    order.delivery_boy = request.user
+    order.order_status = 'processing'
+    order.save()
+    messages.success(request, f"Order #{order.order_number} accepted for delivery!")
+    return JsonResponse({"success": True})
+
+
+@login_required
+@require_POST
+def delivery_update_status(request, order_id, status):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if not profile.is_delivery_boy:
+        return JsonResponse({"success": False, "error": "Not registered as a delivery partner"})
+
+    order = get_object_or_404(Order, id=order_id, delivery_boy=request.user)
+    if status not in ['shipped', 'delivered']:
+        return JsonResponse({"success": False, "error": "Invalid delivery status update"})
+
+    order.order_status = status
+    if status == 'delivered':
+        order.payment_status = 'paid'
+    order.save()
+    
+    messages.success(request, f"Order #{order.order_number} status updated to {status.capitalize()}!")
+    return JsonResponse({"success": True})
+

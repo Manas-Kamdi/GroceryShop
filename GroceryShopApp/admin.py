@@ -25,7 +25,8 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'phone', 'address']
+    list_display = ['user', 'phone', 'address', 'is_delivery_boy']
+    list_filter = ['is_delivery_boy']
     search_fields = ['user__username', 'user__email', 'phone', 'address']
 
 @admin.register(Cart)
@@ -45,15 +46,15 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['order_number', 'user', 'total_amount', 'order_status', 'payment_status', 'created_at']
-    list_filter = ['order_status', 'payment_status', 'created_at']
-    search_fields = ['order_number', 'user__username', 'user__email']
+    list_display = ['order_number', 'user', 'delivery_boy', 'total_amount', 'order_status', 'payment_status', 'created_at']
+    list_filter = ['order_status', 'payment_status', 'created_at', 'delivery_boy']
+    search_fields = ['order_number', 'user__username', 'user__email', 'delivery_boy__username']
     readonly_fields = ['order_number', 'created_at', 'updated_at']
     inlines = [OrderItemInline]
     
     fieldsets = (
         ('Order Information', {
-            'fields': ('order_number', 'user', 'total_amount', 'order_status', 'payment_status', 'payment_id')
+            'fields': ('order_number', 'user', 'delivery_boy', 'total_amount', 'order_status', 'payment_status', 'payment_id')
         }),
         ('Delivery Address', {
             'fields': ('delivery_name', 'delivery_phone', 'delivery_address', 'delivery_area', 'delivery_landmark', 'delivery_pincode')

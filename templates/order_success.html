@@ -1,137 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order Success - GroceryShop</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% extends 'base.html' %}
+{% load static %}
 
-  <style>
-    :root {
-      --bg: #f3faf9;
-      --text: #0b3f3a;
-      --brand: #0f766e;
-      --primary: #14b8a6;
-      --primary-hover: #0ea5a3;
-      --success: #22c55e;
-      --card-bg: #ffffff;
-      --border: #c7e7e2;
-    }
+{% block title %}Order Success - GroceryShop{% endblock %}
 
-    body {
-      margin: 0;
-      font-family: "Poppins", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+{% block content %}
+<div class="container mt-4 mb-4" style="display:flex; justify-content:center; align-items:center; min-height: calc(100vh - 280px);">
+    <div class="card success-page-card" style="max-width: 500px; width: 100%; text-align: center; padding: 48px 32px;">
+        <div class="success-icon-animation">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        
+        <h1 style="font-size: 2.25rem; margin-bottom: 12px; font-weight: 800; color: var(--brand-primary);">
+            Order Placed Successfully!
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 24px;">
+            Thank you for shopping with <strong>GroceryShop</strong>. Your fresh items are being packed and will be delivered shortly!
+        </p>
 
-    .success-container {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 40px 30px;
-      text-align: center;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      max-width: 420px;
-      width: 90%;
-      animation: fadeInUp 0.6s ease;
-    }
+        {% if order_no %}
+        <div style="background-color: var(--success-bg); color: var(--success); padding: 12px 20px; border-radius: var(--border-radius-sm); border: 1px solid var(--success-border); display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 1rem; margin-bottom: 36px;">
+            <i class="fa-solid fa-receipt"></i> Order Number: <span>{{ order_no }}</span>
+        </div>
+        {% endif %}
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .success-icon {
-      font-size: 64px;
-      color: var(--success);
-      margin-bottom: 20px;
-      animation: bounce 1.2s ease infinite alternate;
-    }
-
-    @keyframes bounce {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-6px); }
-    }
-
-    h1 {
-      color: var(--brand);
-      font-size: 26px;
-      margin-bottom: 12px;
-    }
-
-    p {
-      font-size: 16px;
-      color: #374151;
-      margin-bottom: 24px;
-    }
-
-    .order-id {
-      display: inline-block;
-      background: #ecfdf5;
-      color: var(--brand);
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 15px;
-      margin-bottom: 30px;
-    }
-
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      padding: 12px 20px;
-      border-radius: 10px;
-      background: var(--primary);
-      color: white;
-      font-weight: 600;
-      transition: background 0.3s ease;
-    }
-
-    .btn:hover {
-      background: var(--primary-hover);
-    }
-
-    .back-home {
-      display: inline-block;
-      margin-top: 10px;
-      color: var(--brand);
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.3s ease;
-    }
-
-    .back-home:hover {
-      text-decoration: underline;
-      color: var(--primary-hover);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="success-container">
-    <div class="success-icon">🎉</div>
-    <h1>Order Placed Successfully!</h1>
-    <p>Thank you for shopping with <b>GroceryShop</b>!</p>
-
-    <div class="order-id">
-      Order Number: <b>{{ order_no }}</b>
+        <div style="display:flex; flex-direction:column; gap:16px; align-items:center;">
+            <a href="{% url 'my_orders' %}" class="btn btn-primary btn-lg" style="width: 100%;">
+                View My Orders <i class="fa-solid fa-box-open"></i>
+            </a>
+            
+            <a href="{% url 'home' %}" class="btn btn-outline btn-sm" style="width: 100%;">
+                <i class="fa-solid fa-chevron-left"></i> Back to Homepage
+            </a>
+        </div>
     </div>
-
-    <div>
-      <a href="{% url 'my_orders' %}" class="btn">View My Orders</a><br>
-      <a href="{% url 'home' %}" class="back-home">← Back to Home</a>
-    </div>
-  </div>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,636 +1,295 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - GroceryShop</title>
-    <style>
-        :root {
-            --bg: #f3faf9;
-            --text: #0b3f3a;
-            --brand: #0f766e;
-            --primary: #14b8a6;
-            --primary-strong: #0ea5a3;
-            --on-primary: #062a27;
-            --field: #ffffff;
-            --field-border: #c7e7e2;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-            background: var(--bg);
-            color: var(--text);
-        }
+{% block title %}My Profile - GroceryShop{% endblock %}
 
-        .container {
-            max-width: 600px;
-            margin: 48px auto;
-            background: #ffffff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10);
-        }
-
-        .profile h1 {
-            margin: 0 0 16px 0;
-            font-size: 28px;
-            color: var(--brand);
-            letter-spacing: 0.2px;
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        .profile h1::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-strong));
-            border-radius: 2px;
-        }
-
-        .messages {
-            margin: 0 0 16px 0;
-        }
-        .messages .success {
-            padding: 12px;
-            border-radius: 8px;
-            background: #e8f5e8;
-            color: #2d5a2d;
-        }
-        .messages .error {
-            padding: 12px;
-            border-radius: 8px;
-            background: #ffe8e8;
-            color: #7a1111;
-        }
-
-        form {
-            display: grid;
-            gap: 12px;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--field-border);
-            border-radius: 8px;
-            background: var(--field);
-            color: var(--text);
-            outline: none;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
-            transform: translateY(-1px);
-        }
-
-        input:hover {
-            border-color: var(--primary-strong);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 10px 12px;
-            border: none;
-            border-radius: 8px;
-            background: var(--primary);
-            color: var(--on-primary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 160ms ease, transform 80ms ease;
-        }
-        .btn-primary:hover { background: var(--primary-strong); }
-        .btn-primary:active { transform: translateY(1px); }
-
-        .profile-info {
-            margin-top: 20px;
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        .profile-info h3 {
-            margin: 0 0 12px 0;
-            color: var(--brand);
-        }
-        .profile-info p {
-            margin: 4px 0;
-        }
-
-        .profile-photo-section {
-            text-align: center;
-            margin-bottom: 32px;
-            padding: 24px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .profile-photo-section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .profile-photo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--primary);
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .profile-photo-placeholder {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            margin: 0 auto 16px auto;
-            border: 4px solid var(--primary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .photo-upload-btn {
-            display: inline-block;
-            padding: 8px 16px;
-            background: var(--primary);
-            color: var(--on-primary);
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 160ms ease;
-            border: none;
-        }
-
-        .photo-upload-btn:hover {
-            background: var(--primary-strong);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .photo-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 12px;
-        }
-
-        .remove-photo-btn {
-            padding: 6px 12px;
-            background: var(--error);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: background-color 160ms ease;
-        }
-
-        .remove-photo-btn:hover {
-            background: #dc2626;
-        }
-
-        .profile-stats {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .profile-stats h4 {
-            margin: 0 0 16px 0;
-            color: var(--brand);
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 16px;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary);
-        }
-
-        .stat-icon {
-            font-size: 24px;
-            margin-right: 12px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--primary);
-            border-radius: 50%;
-            color: white;
-        }
-
-        .stat-info {
-            flex: 1;
-        }
-
-        .stat-number {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--brand);
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stat-item {
-                padding: 12px;
-            }
-            
-            .stat-icon {
-                font-size: 20px;
-                width: 36px;
-                height: 36px;
-                margin-right: 10px;
-            }
-            
-            .stat-number {
-                font-size: 18px;
-            }
-        }
-    </style>
-</head>
-<body>
-    {% include 'Navbar.html' %}
-    
-    <div class="container">
-        <div class="profile">
-            <h1>My Profile</h1>
-        </div>
-
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <form method="post" action="{% url 'profile' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            <div class="profile-photo-section">
-                {% if user.profile.profile_photo %}
-                    <img src="{{ user.userprofile.profile_photo.url }}" alt="Profile Photo" class="profile-photo" id="profilePhoto">
-                {% else %}
-                    <div class="profile-photo-placeholder" id="profilePhotoPlaceholder">
-                        {{ user.first_name|first|default:user.username|first|upper }}
-                    </div>
-                {% endif %}
-                
-                <div class="photo-actions">
-                    <label for="profile_photo" class="photo-upload-btn">Change Photo</label>
-                    {% if user.profile.profile_photo %}
-                        <button type="button" class="remove-photo-btn" onclick="removePhoto()">Remove</button>
-                    {% endif %}
-                </div>
-                
-                <input type="file" id="profile_photo" name="profile_photo" accept="image/*" class="file-input" onchange="previewPhoto(this)"/>
-            </div>
-
-            <label for="first_name">First Name</label>
-            <input type="text" id="first_name" name="first_name" value="{{ user.first_name|default_if_none:'' }}"/>
-
-            <label for="last_name">Last Name</label>
-            <input type="text" id="last_name" name="last_name" value="{{ user.last_name|default_if_none:'' }}"/>
-
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="{{ user.email|default_if_none:'' }}" readonly/>
-
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" value="{{ user.profile.phone|default_if_none:'' }}"/>
-
-            <label for="address">Address</label>
-            <input type="text" placeholder="City" id="address" name="address" value="{{ user.profile.address|default_if_none:'' }}"/>
-            
-            <label for="area">Area</label>
-            <input type="text" id="area" name="area" placeholder="Area" value="{{ user.profile.area|default_if_none:'' }}"/> 
-            
-            <label for="landmark">Landmark</label>
-            <input type="text" id="landmark" name="landmark" placeholder="Landmark" value="{{ user.profile.landmark|default_if_none:'' }}"/>
-            
-            <label for="pincode">Pincode</label>
-            <input type="text" id="pincode" name="pincode" placeholder="Pincode" value="{{ user.profile.pincode|default_if_none:'' }}"/>
-            
-            <button type="submit" class="btn-primary">Update Profile</button>
-        </form>
-
-        <div class="profile-info">
-            <h3>Account Information</h3>
-            <p><strong>Username:</strong> {{ user.username }}</p>
-            <p><strong>Full Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Phone:</strong> {{ user.profile.phone|default:"Not provided" }}</p>
-            <p><strong>Address:</strong> 
-                {% if user.profile.address or user.profile.area or user.profile.landmark or user.profile.pincode %}
-                    {{ user.profile.address|default:"" }}
-                    {% if user.profile.area %}, {{ user.profile.area }}{% endif %}
-                    {% if user.profile.landmark %}, {{ user.profile.landmark }}{% endif %}
-                    {% if user.profile.pincode %} - {{ user.profile.pincode }}{% endif %}
-                {% else %}
-                    Not provided
-                {% endif %}
-            </p>
-            <p><strong>Member since:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
-            <p><strong>Last login:</strong> {{ user.last_login|date:"F d, Y g:i A" }}</p>
-            
-            <div class="profile-stats">
-                <h4>Account Statistics</h4>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-icon">📦</div>
-                        <div class="stat-info">
-                            <div class="stat-number">{{ user.order_set.count|default:0 }}</div>
-                            <div class="stat-label">Total Orders</div>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon">🛒</div>
-                        <div class="stat-info">
-                            <div class="stat-number">{{ user.cart.cartitem_set.count|default:0 }}</div>
-                            <div class="stat-label">Cart Items</div>
-                        </div>
-                    </div>
-                    {% with recent_order=user.order_set.all|first %}
-                    {% if recent_order %}
-                    <div class="stat-item" onclick="window.location.href='{% url 'track_order' recent_order.order_number %}'">
-                        <div class="stat-icon">🚚</div>
-                        <div class="stat-info">
-                            <div class="stat-number">{{ recent_order.get_order_status_display }}</div>
-                            <div class="stat-label">Track Recent</div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endwith %}
-                    <div class="stat-item">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-info">
-                            <div class="stat-number">{{ user.date_joined|timesince }}</div>
-                            <div class="stat-label">Member Since</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% block content %}
+<div class="container mt-4 mb-4">
+    <!-- Header -->
+    <div class="section-header">
+        <h1 class="section-title">My Account</h1>
+        <p class="section-subtitle">Manage your personal information, address, and profile settings</p>
     </div>
 
-    <script>
-        function previewPhoto(input) {
-            if (input.files && input.files[0]) {
-                // Validate file type
-                const file = input.files[0];
-                if (!file.type.startsWith('image/')) {
-                    alert('Please select an image file.');
-                    input.value = '';
-                    return;
-                }
-                
-                // Validate file size (max 2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Image size should be less than 2MB.');
-                    input.value = '';
-                    return;
-                }
-                
-                // Compress image if it's too large
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                
-                img.onload = function() {
-                    // Calculate new dimensions (max 400x400)
-                    let { width, height } = img;
-                    const maxSize = 400;
+    <div class="profile-layout">
+        <!-- Left Column: Avatar & Quick Stats -->
+        <div class="profile-sidebar">
+            <form id="photoForm" method="post" action="{% url 'profile' %}" enctype="multipart/form-data" style="width: 100%;">
+                {% csrf_token %}
+                <div class="avatar-upload-box">
+                    {% if profile.profile_photo %}
+                        <img src="{{ profile.profile_photo.url }}" alt="Profile Photo" class="profile-avatar-preview" id="profilePhoto">
+                    {% else %}
+                        <div class="profile-avatar-placeholder" id="profilePhotoPlaceholder">
+                            {{ user.first_name|first|default:user.username|first|upper }}
+                        </div>
+                    {% endif %}
                     
-                    if (width > height) {
-                        if (width > maxSize) {
-                            height = (height * maxSize) / width;
-                            width = maxSize;
-                        }
-                    } else {
-                        if (height > maxSize) {
-                            width = (width * maxSize) / height;
-                            height = maxSize;
-                        }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    // Draw and compress
-                    ctx.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                    
-                    // Update the image display
-                    const profilePhoto = document.getElementById('profilePhoto');
-                    const profilePhotoPlaceholder = document.getElementById('profilePhotoPlaceholder');
-                    
-                    if (profilePhoto) {
-                        profilePhoto.src = compressedDataUrl;
-                    } else {
-                        // Create new image element if placeholder exists
-                        const newImg = document.createElement('img');
-                        newImg.src = compressedDataUrl;
-                        newImg.alt = 'Profile Photo';
-                        newImg.className = 'profile-photo';
-                        newImg.id = 'profilePhoto';
+                    <div class="photo-actions" style="display:flex; flex-direction:column; gap:10px; width:100%;">
+                        <label for="profile_photo" class="btn btn-outline btn-sm" style="width: 100%;">
+                            <i class="fa-solid fa-camera"></i> Change Photo
+                        </label>
+                        <input type="file" id="profile_photo" name="profile_photo" accept="image/*" style="display: none;" onchange="previewPhoto(this)"/>
                         
-                        if (profilePhotoPlaceholder) {
-                            profilePhotoPlaceholder.parentNode.replaceChild(newImg, profilePhotoPlaceholder);
-                        }
-                    }
-                    
-                    // Show remove button if it doesn't exist
-                    const removeBtn = document.querySelector('.remove-photo-btn');
-                    if (!removeBtn) {
-                        const photoActions = document.querySelector('.photo-actions');
-                        const removeButton = document.createElement('button');
-                        removeButton.type = 'button';
-                        removeButton.className = 'remove-photo-btn';
-                        removeButton.textContent = 'Remove';
-                        removeButton.onclick = removePhoto;
-                        photoActions.appendChild(removeButton);
-                    }
-                    
-                    // Update the label text to show file is selected
-                    const uploadBtn = document.querySelector('.photo-upload-btn');
-                    if (uploadBtn) {
-                        uploadBtn.textContent = 'Change Photo';
-                    }
-                };
-                
-                img.src = URL.createObjectURL(file);
-                
-                // The image processing is handled above
-            }
-        }
+                        {% if profile.profile_photo %}
+                            <button type="button" class="btn btn-outline btn-danger btn-sm" onclick="removePhoto()" style="width: 100%;">
+                                <i class="fa-solid fa-trash"></i> Remove Photo
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
 
-        function removePhoto() {
-            if (confirm('Are you sure you want to remove your profile photo?')) {
-                // Create a hidden input to indicate photo removal
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'remove_photo';
-                hiddenInput.value = 'true';
+            <!-- Quick Account Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card" onclick="window.location.href='{% url 'my_orders' %}'">
+                    <div class="stat-card-icon"><i class="fa-solid fa-box"></i></div>
+                    <div class="stat-card-info">
+                        <div class="stat-card-num">{{ user.order_set.count|default:0 }}</div>
+                        <div class="stat-card-label">Total Orders</div>
+                    </div>
+                </div>
                 
-                const form = document.querySelector('form');
-                form.appendChild(hiddenInput);
+                <div class="stat-card" onclick="window.location.href='{% url 'cart' %}'">
+                    <div class="stat-card-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                    <div class="stat-card-info">
+                        <div class="stat-card-num">{{ user.cart.cartitem_set.count|default:0 }}</div>
+                        <div class="stat-card-label">Cart Items</div>
+                    </div>
+                </div>
                 
-                // Submit the form
-                form.submit();
-            }
-        }
+                {% with recent_order=user.order_set.all|first %}
+                {% if recent_order %}
+                <div class="stat-card" onclick="window.location.href='{% url 'track_order' recent_order.order_number %}'">
+                    <div class="stat-card-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                    <div class="stat-card-info">
+                        <div class="stat-card-num" style="font-size:0.9rem;">Track</div>
+                        <div class="stat-card-label">{{ recent_order.get_order_status_display }}</div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endwith %}
+                
+                <div class="stat-card">
+                    <div class="stat-card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div class="stat-card-info">
+                        <div class="stat-card-num" style="font-size: 0.95rem;">Active</div>
+                        <div class="stat-card-label">Joined {{ user.date_joined|date:"M Y" }}</div>
+                    </div>
+                </div>
+            </div>
 
-        // Ensure file input is properly connected
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('profile_photo');
-            const uploadBtn = document.querySelector('.photo-upload-btn');
-            const form = document.querySelector('form');
-            
-            if (fileInput && uploadBtn) {
-                // Make sure the label is properly connected
-                uploadBtn.setAttribute('for', 'profile_photo');
+            <!-- Delivery Partner Program -->
+            <div class="card mt-3" style="padding: 20px; width: 100%; border: 1.5px dashed var(--brand-primary); text-align: center; box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2rem; color: var(--brand-primary); margin-bottom: 12px;">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                </div>
+                <h4 style="font-size: 1.1rem; margin-bottom: 8px; font-weight: 700; color: var(--brand-primary);">Delivery Partner</h4>
                 
-                // Add click event as backup
-                uploadBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    fileInput.click();
-                });
-            }
+                {% if profile.is_delivery_boy %}
+                    <p style="font-size: 0.85rem; margin-bottom: 16px; color: var(--success); font-weight: 600;">
+                        <i class="fa-solid fa-circle-check"></i> Active Delivery Partner
+                    </p>
+                    <a href="{% url 'delivery_dashboard' %}" class="btn btn-primary btn-sm" style="width: 100%; margin-bottom: 10px;">
+                        Go to Dashboard <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                {% else %}
+                    <p style="font-size: 0.85rem; margin-bottom: 16px; color: var(--text-muted);">
+                        Join our delivery network. Pick up and deliver groceries to local customers.
+                    </p>
+                {% endif %}
+                
+                <form method="post" action="{% url 'toggle_delivery_status' %}" style="width: 100%;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn {% if profile.is_delivery_boy %}btn-outline btn-danger{% else %}btn-outline{% endif %} btn-sm" style="width: 100%;">
+                        {% if profile.is_delivery_boy %}
+                            Disable Delivery Mode <i class="fa-solid fa-power-off"></i>
+                        {% else %}
+                            Become Delivery Partner <i class="fa-solid fa-plus"></i>
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Column: Personal Info Form -->
+        <div class="card">
+            <h3 style="margin-bottom: 24px; border-bottom: 1.5px solid var(--border-color); padding-bottom: 12px;">
+                <i class="fa-solid fa-user-gear"></i> Account Information
+            </h3>
             
-            // Add form submission debugging
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    const fileInput = document.getElementById('profile_photo');
-                    if (fileInput && fileInput.files && fileInput.files.length > 0) {
-                        console.log('File selected for upload:', fileInput.files[0].name);
-                    } else {
-                        console.log('No file selected');
-                    }
-                });
-            }
-            
-            // Add click functionality to stat items
-            const statItems = document.querySelectorAll('.stat-item');
-            statItems.forEach((item, index) => {
-                item.addEventListener('click', function() {
-                    // Add click animation
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
+            <form method="post" action="{% url 'profile' %}">
+                {% csrf_token %}
+                
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ user.first_name|default_if_none:'' }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name|default_if_none:'' }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address (Read-only)</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ user.email|default_if_none:'' }}" readonly style="background-color: var(--bg-main); color: var(--text-muted); cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter Phone Number" value="{{ profile.phone|default_if_none:'' }}">
+                </div>
+
+                <h3 style="margin: 24px 0 16px 0; border-bottom: 1.5px solid var(--border-color); padding-bottom: 12px;">
+                    <i class="fa-solid fa-location-dot"></i> Delivery Address
+                </h3>
+
+                <div class="form-group">
+                    <label for="address">Street Address / City</label>
+                    <input type="text" placeholder="Enter City/Street Address" id="address" name="address" class="form-control" value="{{ profile.address|default_if_none:'' }}">
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="form-group">
+                        <label for="area">Area / Colony</label>
+                        <input type="text" id="area" name="area" placeholder="Enter Area" class="form-control" value="{{ profile.area|default_if_none:'' }}">
+                    </div>
                     
-                    // Navigate based on stat type
-                    switch(index) {
-                        case 0: // Total Orders
-                            window.location.href = '{% url "my_orders" %}';
-                            break;
-                        case 1: // Cart Items
-                            window.location.href = '{% url "cart" %}';
-                            break;
-                        case 2: // Member Since
-                            // Show a nice toast message
-                            showToast('Welcome to GroceryShop! 🎉', 'success');
-                            break;
-                    }
-                });
-            });
-        });
-        
-        // Toast notification function
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                border-radius: 8px;
-                color: white;
-                font-weight: 500;
-                z-index: 1000;
-                animation: slideInRight 0.3s ease;
-                ${type === 'success' ? 'background: var(--success);' : 
-                  type === 'error' ? 'background: var(--error);' : 
-                  'background: var(--primary);'}
-            `;
+                    <div class="form-group">
+                        <label for="landmark">Landmark</label>
+                        <input type="text" id="landmark" name="landmark" placeholder="Enter Landmark" class="form-control" value="{{ profile.landmark|default_if_none:'' }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="text" id="pincode" name="pincode" placeholder="Enter Pincode" class="form-control" value="{{ profile.pincode|default_if_none:'' }}">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg mt-3" style="width: 100%;">
+                    Update Settings <i class="fa-solid fa-floppy-disk"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewPhoto(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select a valid image file.', 'error');
+                input.value = '';
+                return;
+            }
             
-            // Add animation styles
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideInRight {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
+            // Limit to 2MB validation
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image size should be less than 2MB.', 'error');
+                input.value = '';
+                return;
+            }
+            
+            // Image scaling/compression canvas logic
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                let { width, height } = img;
+                const maxSize = 400;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
                 }
-            `;
-            document.head.appendChild(style);
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                
+                const profilePhoto = document.getElementById('profilePhoto');
+                const placeholder = document.getElementById('profilePhotoPlaceholder');
+                
+                if (profilePhoto) {
+                    profilePhoto.src = compressedDataUrl;
+                } else if (placeholder) {
+                    const newImg = document.createElement('img');
+                    newImg.src = compressedDataUrl;
+                    newImg.alt = 'Profile Photo';
+                    newImg.className = 'profile-avatar-preview';
+                    newImg.id = 'profilePhoto';
+                    placeholder.parentNode.replaceChild(newImg, placeholder);
+                }
+                
+                // Submit photo change automatically
+                showToast('Saving profile picture...', 'info');
+                document.getElementById('photoForm').submit();
+            };
             
-            document.body.appendChild(toast);
-            
-            // Remove toast after 3 seconds
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            img.src = URL.createObjectURL(file);
         }
-    </script>
-</body>
-</html>
+    }
+
+    function removePhoto() {
+        showConfirm('Are you sure you want to remove your profile photo?', 'Remove Profile Picture', () => {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'remove_photo';
+            hiddenInput.value = 'true';
+            
+            const photoForm = document.getElementById('photoForm');
+            photoForm.appendChild(hiddenInput);
+            photoForm.submit();
+        });
+    }
+
+    // Dynamic toast alerts helper
+    function showToast(message, type = 'info') {
+        const container = document.querySelector('.messages-container') || document.createElement('div');
+        if (!container.className) {
+            container.className = 'messages-container';
+            document.body.appendChild(container);
+        }
+        
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        
+        const icons = {
+            success: '<i class="fa-solid fa-circle-check"></i>',
+            error: '<i class="fa-solid fa-circle-exclamation"></i>',
+            warning: '<i class="fa-solid fa-triangle-exclamation"></i>',
+            info: '<i class="fa-solid fa-circle-info"></i>'
+        };
+        
+        alert.innerHTML = `
+            <span class="alert-icon">${icons[type] || icons.info}</span>
+            <span class="alert-text">${message}</span>
+            <button type="button" class="alert-close-btn" onclick="this.parentElement.remove()">&times;</button>
+        `;
+        
+        container.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            alert.style.transition = 'all 0.5s ease';
+            setTimeout(() => alert.remove(), 500);
+        }, 5000);
+    }
+</script>
+{% endblock %}
