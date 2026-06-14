@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Add Product - GroceryShop{% endblock %}
+{% block title %}Add Product - Instacart{% endblock %}
 
 {% block content %}
 <div class="container mt-4 mb-4" style="max-width: 680px;">
@@ -59,20 +59,25 @@
                     <option value="Beverages">Beverages</option>
                     <option value="Snacks">Snacks</option>
                     <option value="Frozen">Frozen</option>
-                    <option value="Organic">Organic</option>
+                    <option value="Household">Household</option>
                     <option value="Washroom & Hygiene">Washroom & Hygiene</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label><i class="fa-solid fa-image label-icon"></i> Product Image</label>
-                <div class="image-upload-dropzone" id="dropzone" onclick="document.getElementById('image').click()">
+                <div class="image-upload-dropzone" id="dropzone">
                     <div class="dropzone-placeholder" id="dropzonePlaceholder">
                         <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
-                        <p class="dropzone-text">Click to choose image file</p>
+                        <p class="dropzone-text">Click or drag image file here</p>
                         <span class="dropzone-hint">Supports JPEG, PNG, WEBP (Max 2MB)</span>
                     </div>
-                    <img id="imagePreview" class="dropzone-preview" style="display: none;" alt="Product Preview">
+                    <div class="dropzone-preview-container" id="previewContainer" style="display: none;">
+                        <img id="imagePreview" class="dropzone-preview" alt="Product Preview">
+                        <button type="button" class="btn-remove-preview" id="btnRemoveImage" onclick="removeProductImage(event)">
+                            <i class="fa-solid fa-trash-can"></i> Remove
+                        </button>
+                    </div>
                     <input type="file" id="image" name="image" accept="image/*" style="display: none;"
                         onchange="previewProductImage(this)">
                 </div>
@@ -106,16 +111,70 @@
             reader.onload = function (e) {
                 const preview = document.getElementById('imagePreview');
                 const placeholder = document.getElementById('dropzonePlaceholder');
+                const previewContainer = document.getElementById('previewContainer');
 
-                if (preview && placeholder) {
+                if (preview && placeholder && previewContainer) {
                     preview.src = e.target.result;
-                    preview.style.display = 'block';
+                    previewContainer.style.display = 'flex';
                     placeholder.style.display = 'none';
                 }
             };
             reader.readAsDataURL(file);
         }
     }
+
+    function removeProductImage(event) {
+        if (event) event.stopPropagation();
+        const fileInput = document.getElementById('image');
+        const preview = document.getElementById('imagePreview');
+        const placeholder = document.getElementById('dropzonePlaceholder');
+        const previewContainer = document.getElementById('previewContainer');
+        
+        fileInput.value = '';
+        if (preview) preview.src = '';
+        if (previewContainer) previewContainer.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('image');
+        
+        if (dropzone && fileInput) {
+            // Drag and Drop implementation
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('dragover');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('dragover');
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files && files.length > 0) {
+                    fileInput.files = files;
+                    previewProductImage(fileInput);
+                }
+            }, false);
+
+            dropzone.addEventListener('click', (e) => {
+                const previewContainer = document.getElementById('previewContainer');
+                if (!e.target.closest('.btn-remove-preview') && (!previewContainer || previewContainer.style.display === 'none')) {
+                    fileInput.click();
+                }
+            });
+        }
+    });
 
     // Helper toast alerts
     function showToast(message, type = 'info') {

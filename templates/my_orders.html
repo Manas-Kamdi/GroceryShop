@@ -1,90 +1,235 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Orders - GroceryShop{% endblock %}
+{% block title %}My Orders - Instacart{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-4" style="max-width: 960px;">
-    <!-- Header -->
-    <div class="section-header">
-        <h1 class="section-title">My Orders</h1>
-        <p class="section-subtitle">Track your order history, delivery progress, and invoices</p>
+<style>
+    .order-filters-container {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+    }
+    .filter-tab {
+        padding: 10px 24px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        background-color: #ffffff;
+        color: var(--brand-primary);
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .filter-tab:hover {
+        background-color: var(--bg-main);
+    }
+    .filter-tab.active {
+        background-color: var(--brand-primary);
+        color: #ffffff;
+        border-color: var(--brand-primary);
+    }
+    .order-card-figma {
+        background-color: #ffffff;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 24px;
+    }
+    .order-card-figma:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--brand-primary-light);
+    }
+    .order-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .order-card-title {
+        font-family: 'DM Serif Display', sans-serif;
+        font-size: 1.2rem;
+        color: var(--brand-primary);
+        font-weight: 700;
+        margin: 0 0 4px 0;
+    }
+    .order-card-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 0;
+        font-weight: 600;
+    }
+    .order-status-badge {
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 20px;
+        text-transform: capitalize;
+    }
+    .order-status-badge.delivered {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    .order-status-badge.shipped {
+        background-color: #ffedd5;
+        color: #9a3412;
+    }
+    .order-status-badge.pending,
+    .order-status-badge.confirmed,
+    .order-status-badge.processing {
+        background-color: #e0f2fe;
+        color: #075985;
+    }
+    .order-status-badge.cancelled {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    .order-card-thumbnails {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 8px 0;
+    }
+    .order-thumbnail-img {
+        width: 56px;
+        height: 56px;
+        border-radius: 8px;
+        object-fit: contain;
+        padding: 4px;
+        border: 1px solid var(--border-color);
+        background-color: #ffffff;
+    }
+    .order-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--border-color);
+        padding-top: 16px;
+        margin-top: 8px;
+    }
+    .order-card-count {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+    .order-card-total {
+        font-family: 'DM Serif Display', sans-serif;
+        font-size: 1.3rem;
+        color: var(--text-main);
+        font-weight: 800;
+    }
+</style>
+
+<div class="container mt-4 mb-5" style="max-width: 900px;">
+    <!-- Heading -->
+    <div style="margin-bottom: 32px;">
+        <h1 style="font-family: 'DM Serif Display', sans-serif; font-size: 2.2rem; color: var(--brand-primary); margin-bottom: 8px; font-weight: 700;">My Orders</h1>
+        <p style="color: var(--text-muted); font-size: 1rem; margin: 0;">Track your orders, delivery status, and invoice summaries.</p>
     </div>
 
     {% if orders %}
-    <div style="display:grid; gap:32px;">
+    <!-- Filter Tabs -->
+    <div class="order-filters-container">
+        <button class="filter-tab active" data-filter="all">All Orders</button>
+        <button class="filter-tab" data-filter="placed">Placed</button>
+        <button class="filter-tab" data-filter="out-for-delivery">Out for Delivery</button>
+        <button class="filter-tab" data-filter="delivered">Delivered</button>
+    </div>
+
+    <!-- Orders Grid -->
+    <div id="orders-list">
         {% for order in orders %}
-        <div class="card" style="padding: 0; overflow: hidden;">
-            <!-- Order Header -->
-            <div style="padding: 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; border-bottom: 1px solid var(--border-color); background-color: var(--bg-main);">
+        <div class="order-card-figma" data-status="{{ order.order_status }}" onclick="window.location.href='{% url 'track_order' order.order_number %}'">
+            <div class="order-card-header">
                 <div>
-                    <h3 style="font-size:1.2rem; color:var(--brand-primary); margin-bottom:4px;">
-                        Order #{{ order.order_number }}
-                    </h3>
-                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:0.85rem; color:var(--text-muted); font-weight: 500;">
-                        <span>Placed: <strong>{{ order.created_at|date:"M d, Y" }}</strong></span>
-                        <span>•</span>
-                        <span>{{ order.orderitem_set.count }} Item{{ order.orderitem_set.count|pluralize }}</span>
-                        <span>•</span>
-                        <span>Total: <strong style="color:var(--brand-primary)">₹{{ order.total_amount|floatformat:2 }}</strong></span>
-                    </div>
+                    <h4 class="order-card-title">Order #{{ order.order_number }}</h4>
+                    <p class="order-card-date">{{ order.created_at|date:"M d, Y" }}</p>
                 </div>
-                
-                <div>
-                    <span class="badge badge-{{ order.order_status }}">
-                        {{ order.get_order_status_display }}
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <span class="order-status-badge {{ order.order_status }}">
+                        {% if order.order_status == 'shipped' %}Out for Delivery{% else %}{{ order.get_order_status_display }}{% endif %}
                     </span>
+                    <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 1rem;"></i>
                 </div>
             </div>
-
-            <!-- Order Items -->
-            <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color);">
+            
+            <div class="order-card-thumbnails">
                 {% for item in order.orderitem_set.all %}
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(15,118,110,0.06);">
-                    <div>
-                        <h4 style="font-size:0.95rem; color:var(--text-main); font-weight:600; margin-bottom:2px;">{{ item.product.name }}</h4>
-                        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0;">Qty: {{ item.quantity }} × ₹{{ item.price|floatformat:2 }}</p>
-                    </div>
-                    <div style="font-weight:600; color:var(--text-main); font-size:0.95rem;">
-                        ₹{{ item.total_price|floatformat:2 }}
-                    </div>
-                </div>
+                {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="order-thumbnail-img">
+                {% else %}
+                <img src="{% static 'images/product-placeholder.svg' %}" alt="Placeholder" class="order-thumbnail-img">
+                {% endif %}
                 {% endfor %}
             </div>
-
-            <!-- Order Summary Actions -->
-            <div style="padding: 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-                <div style="font-family:var(--font-headings); font-weight:800; color:var(--brand-primary); font-size:1.2rem;">
-                    Total Amount: ₹{{ order.total_amount|floatformat:2 }}
-                </div>
-                
-                <div style="display:flex; gap:12px;">
-                    <a href="{% url 'track_order' order.order_number %}" class="btn btn-outline btn-sm">
-                        <i class="fa-solid fa-map-location-dot"></i> Track Order
-                    </a>
-                    
-                    {% if order.order_status == 'pending' %}
-                        <a href="{% url 'cancel_order' order.id %}" class="btn btn-outline btn-danger btn-sm"
-                           onclick="event.preventDefault(); showConfirm('Are you sure you want to request cancellation for order #{{ order.order_number }}?', 'Cancel Order Request', () => { window.location.href = '{% url 'cancel_order' order.id %}'; });">
-                            <i class="fa-regular fa-rectangle-xmark"></i> Cancel Order
-                        </a>
-                    {% endif %}
-                </div>
+            
+            <div class="order-card-footer">
+                <span class="order-card-count">{{ order.orderitem_set.count }} Item{{ order.orderitem_set.count|pluralize }}</span>
+                <span class="order-card-total">₹{{ order.total_amount|floatformat:2 }}</span>
             </div>
         </div>
         {% endfor %}
     </div>
     
     {% else %}
-    <!-- Empty Orders State -->
-    <div class="card text-center" style="max-width: 600px; margin: 40px auto; padding: 48px 32px;">
-        <div class="empty-state-icon"><i class="fa-solid fa-receipt"></i></div>
-        <h2>No Orders Found</h2>
-        <p class="mb-3">You haven't placed any orders yet. Add groceries to your cart and check out!</p>
-        <a href="{% url 'products' %}" class="btn btn-primary btn-lg">
-            Shop Groceries <i class="fa-solid fa-chevron-right"></i>
+    <!-- Empty State -->
+    <div class="card text-center" style="max-width: 600px; margin: 40px auto; padding: 48px 32px; border-radius: 16px; border: 1px solid var(--border-color);">
+        <div style="font-size: 3rem; color: var(--brand-accent); margin-bottom: 16px;"><i class="fa-solid fa-receipt"></i></div>
+        <h2 style="font-family: 'DM Serif Display', sans-serif; font-size: 1.8rem; color: var(--brand-primary); margin-bottom: 8px;">No Orders Found</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">You haven't placed any orders yet. Fill your cart and checkout!</p>
+        <a href="{% url 'products' %}" class="btn btn-primary" style="padding: 12px 32px; border-radius: 24px;">
+            Shop Groceries
         </a>
     </div>
     {% endif %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.filter-tab');
+        const cards = document.querySelectorAll('.order-card-figma');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const filterValue = tab.getAttribute('data-filter');
+
+                cards.forEach(card => {
+                    const status = card.getAttribute('data-status');
+                    if (filterValue === 'all') {
+                        card.style.display = 'flex';
+                    } else if (filterValue === 'placed') {
+                        if (status === 'pending' || status === 'confirmed' || status === 'processing') {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    } else if (filterValue === 'out-for-delivery') {
+                        if (status === 'shipped') {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    } else if (filterValue === 'delivered') {
+                        if (status === 'delivered') {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+    });
+</script>
 {% endblock %}

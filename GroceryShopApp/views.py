@@ -62,6 +62,11 @@ def signup(request):
         # create user
         user = User.objects.create_user(username=name, email=email, password=password)
         user.save()
+
+        # create user profile to store phone number and address
+        profile = UserProfile.objects.create(user=user, phone=number, address=address)
+        profile.save()
+
         messages.success(request, "Account created successfully! Please log in.")
         return redirect('login')
 
@@ -75,13 +80,68 @@ def logout(request):
 # 🧭 Dashboard
 @login_required
 def dashboard(request):
+    if request.user.is_staff:
+        total_orders = Order.objects.count()
+        total_users = User.objects.count()
+        total_products = Product.objects.count()
+        out_of_stock = Product.objects.filter(stock_quantity=0).count()
+        recent_orders = Order.objects.all().order_by('-created_at')[:5]
+        context = {
+            "total_orders": total_orders,
+            "total_users": total_users,
+            "total_products": total_products,
+            "out_of_stock": out_of_stock,
+            "recent_orders": recent_orders,
+        }
+        return render(request, "Dashboard.html", context)
     return render(request, "Dashboard.html")
 
 # 🛒 Products Page
 def products(request):
     products = Product.objects.all()
+    
+    category = request.GET.get('category')
+    search_query = request.GET.get('search')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    
+    if category:
+        if category == "Fruits & Vegetables":
+            products = products.filter(category__in=["Fruits", "Vegetables", "Fruits & Vegetables"])
+        elif category == "Dairy & Eggs":
+            products = products.filter(category__in=["Dairy", "Dairy & Eggs"])
+        elif category == "Meat & Seafood":
+            products = products.filter(category__in=["Meat", "Seafood", "Meat & Seafood"])
+        elif category == "Household":
+            products = products.filter(category__in=["Washroom & Hygiene", "Household"])
+        else:
+            products = products.filter(category=category)
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+    if min_price:
+        try:
+            products = products.filter(price__gte=float(min_price))
+        except ValueError:
+            pass
+    if max_price:
+        try:
+            products = products.filter(price__lte=float(max_price))
+        except ValueError:
+            pass
+            
     categories = Product.objects.values_list('category', flat=True).distinct().exclude(category__isnull=True).exclude(category='')
     return render(request, "Products.html", {"products": products, "categories": categories})
+
+# 🏷️ Deals Page
+def deals(request):
+    products = Product.objects.all()
+    return render(request, "Deals.html", {"products": products})
+
+# 🔍 Product Detail Page
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+    return render(request, "Product.html", {"product": product, "related_products": related_products})
 
 # ➕ Add Product (Admin)
 @login_required

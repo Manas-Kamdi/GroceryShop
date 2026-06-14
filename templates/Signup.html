@@ -1,62 +1,110 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Register Account - GroceryShop{% endblock %}
+{% block title %}Register - Instacart{% endblock %}
 
 {% block content %}
 <div class="auth-page-wrapper">
-    <div class="card auth-card">
-        <div class="auth-header">
-            <h1 class="auth-title">Create Account</h1>
-            <p class="section-subtitle">Register to unlock fast checkout and order tracking</p>
+    <div class="auth-split-container">
+        <!-- Left Side: Visual Image -->
+        <div class="auth-side-image">
+            <h1>Join Instacart Today</h1>
+            <p>Register to unlock fast checkout, real-time tracking, and exclusive discounts.</p>
         </div>
 
-        <form method="post" action="{% url 'signup' %}">
-            {% csrf_token %}
+        <!-- Right Side: Form -->
+        <div class="auth-side-form">
+            <div class="auth-form-card">
+                <!-- Center Logo -->
+                <div class="auth-logo-center">
+                    <i class="fa-solid fa-carrot" style="color: var(--brand-accent);"></i>
+                    <span
+                        style="font-family: 'DM Serif Display', sans-serif; font-size: 1.5rem; color: var(--brand-primary);">Instacart</span>
+                </div>
 
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Full Name"
-                    value="{{ request.POST.name|default_if_none:'' }}" required>
+                <h2 class="auth-form-title">Create your account</h2>
+                <p class="auth-form-subtitle">Already have an account? <a href="{% url 'login' %}"
+                        class="text-app-orange">Sign in</a></p>
+
+                <form method="post" action="{% url 'signup' %}">
+                    {% csrf_token %}
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="name" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Full
+                            Name</label>
+                        <div class="input-with-icon">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Enter Full Name"
+                                value="{{ request.POST.name|default_if_none:'' }}" required style="border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="email" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Email
+                            Address</label>
+                        <div class="input-with-icon">
+                            <i class="fa-regular fa-envelope"></i>
+                            <input type="email" id="email" name="email" class="form-control"
+                                placeholder="you@example.com" value="{{ request.POST.email|default_if_none:'' }}"
+                                required style="border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="number" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Phone
+                            Number</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="number" name="number" class="form-control"
+                                placeholder="10-digit number" value="{{ request.POST.number|default_if_none:'' }}"
+                                pattern="[0-9]{10}" title="Enter 10 digit phone number" required
+                                style="border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="address"
+                            style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Address</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input type="text" id="address" name="address" class="form-control"
+                                placeholder="Enter street address" value="{{ request.POST.address|default_if_none:'' }}"
+                                required style="border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="password"
+                            style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="••••••••" required style="border-radius: 8px; padding-right: 44px;">
+                            <i class="fa-regular fa-eye toggle-password"
+                                onclick="togglePasswordVisibility('password', this)"
+                                style="cursor: pointer; position: absolute; right: 16px; left: auto; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.95rem; z-index: 5;"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="c-password"
+                            style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Confirm
+                            Password</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="c-password" name="c-password" class="form-control"
+                                placeholder="••••••••" required style="border-radius: 8px; padding-right: 44px;">
+                            <i class="fa-regular fa-eye toggle-password"
+                                onclick="togglePasswordVisibility('c-password', this)"
+                                style="cursor: pointer; position: absolute; right: 16px; left: auto; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.95rem; z-index: 5;"></i>
+                        </div>
+                    </div>
+
+                    <button class="auth-submit-btn" type="submit" style="margin-top: 0;">
+                        Sign Up
+                    </button>
+                </form>
             </div>
-
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email Address"
-                    value="{{ request.POST.email|default_if_none:'' }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="number">Phone Number</label>
-                <input type="tel" id="number" name="number" class="form-control" placeholder="Enter Phone Number"
-                    value="{{ request.POST.number|default_if_none:'' }}" pattern="[0-9]{10}" title="Enter 10 digit phone number"
-                    required>
-            </div>
-
-            <div class="form-group">
-                <label for="address">Address</label>
-                <input type="text" id="address" name="address" class="form-control" placeholder="Enter Your Address"
-                    value="{{ request.POST.address|default_if_none:'' }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Enter Password" required>
-            </div>
-
-            <div class="form-group">
-                <label for="c-password">Confirm Password</label>
-                <input type="password" id="c-password" name="c-password" class="form-control" placeholder="Confirm Password" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary mt-2" style="width: 100%;">
-                Create Account <i class="fa-solid fa-user-plus"></i>
-            </button>
-        </form>
-
-        <div class="auth-redirect">
-            <span>Already have an account?</span>
-            <a href="{% url 'login' %}">Login here</a>
         </div>
     </div>
 </div>
@@ -64,17 +112,55 @@
 <!-- SweetAlert Library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+    function togglePasswordVisibility(fieldId, icon) {
+        const passwordInput = document.getElementById(fieldId);
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.className = 'fa-regular fa-eye-slash toggle-password';
+        } else {
+            passwordInput.type = 'password';
+            icon.className = 'fa-regular fa-eye toggle-password';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('c-password');
+
+        if (password && confirmPassword) {
+            function validatePasswords() {
+                if (confirmPassword.value === '') {
+                    confirmPassword.style.borderColor = 'var(--border-color)';
+                    return;
+                }
+                if (password.value === confirmPassword.value) {
+                    confirmPassword.style.borderColor = 'var(--success)';
+                } else {
+                    confirmPassword.style.borderColor = 'var(--error)';
+                }
+            }
+            password.addEventListener('keyup', validatePasswords);
+            confirmPassword.addEventListener('keyup', validatePasswords);
+        }
+    });
+</script>
+
 {% if messages %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         {% for message in messages %}
         Swal.fire({
             icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
             title: "{{ message }}",
-            confirmButtonColor: "#14b8a6"
+            confirmButtonColor: "#1b3022"
         });
         {% endfor %}
     });
 </script>
 {% endif %}
 {% endblock %}
+
+{% block promo_banner %}{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}

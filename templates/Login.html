@@ -1,38 +1,80 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Login - GroceryShop{% endblock %}
+{% block title %}Login - Instacart{% endblock %}
 
 {% block content %}
 <div class="auth-page-wrapper">
-    <div class="card auth-card">
-        <div class="auth-header">
-            <h1 class="auth-title">Welcome Back</h1>
-            <p class="section-subtitle">Login to access your dashboard, orders, and cart</p>
+    <div class="auth-split-container">
+        <!-- Left Side: Visual Image -->
+        <div class="auth-side-image">
+            <h1>Welcome back to Instacart</h1>
+            <p>Fresh groceries and organic produce, delivered to your doorstep.</p>
         </div>
 
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" class="form-control" placeholder="Enter your email" id="email" name="email" required>
+        <!-- Right Side: Form -->
+        <div class="auth-side-form">
+            <div class="auth-form-card">
+                <!-- Center Logo -->
+                <div class="auth-logo-center">
+                    <i class="fa-solid fa-carrot" style="color: var(--brand-accent);"></i>
+                    <span
+                        style="font-family: 'DM Serif Display', sans-serif; font-size: 1.5rem; color: var(--brand-primary);">Instacart</span>
+                </div>
+
+                <h2 class="auth-form-title">Sign in to your account</h2>
+                <p class="auth-form-subtitle">Don't have an account? <a href="{% url 'signup' %}"
+                        class="text-app-orange">Create one</a></p>
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="email" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Email
+                            Address</label>
+                        <div class="input-with-icon">
+                            <i class="fa-regular fa-envelope"></i>
+                            <input type="email" class="form-control" placeholder="you@example.com" id="email"
+                                name="email" required style="border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label for="password"
+                            style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" class="form-control" placeholder="••••••••" id="password"
+                                name="password" required style="border-radius: 8px; padding-right: 44px;">
+                            <i class="fa-regular fa-eye toggle-password"
+                                onclick="togglePasswordVisibility('password', this)"
+                                style="cursor: pointer; position: absolute; right: 16px; left: auto; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.95rem; z-index: 5;"></i>
+                        </div>
+                    </div>
+
+                    <button class="auth-submit-btn" type="submit">
+                        Sign In
+                    </button>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" placeholder="Enter your password" id="password" name="password" required>
-            </div>
-            
-            <button class="btn btn-primary mt-2" type="submit" style="width: 100%;">
-                Sign In <i class="fa-solid fa-right-to-bracket"></i>
-            </button>
-        </form>
-        
-        <div class="auth-redirect">
-            <span>Don't have an account?</span>
-            <a href="{% url 'signup' %}">Sign up today</a>
         </div>
     </div>
 </div>
+
+<script>
+    function togglePasswordVisibility(fieldId, icon) {
+        const passwordInput = document.getElementById(fieldId);
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.className = 'fa-regular fa-eye-slash toggle-password';
+        } else {
+            passwordInput.type = 'password';
+            icon.className = 'fa-regular fa-eye toggle-password';
+        }
+    }
+</script>
 {% endblock %}
+
+{% block promo_banner %}{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}

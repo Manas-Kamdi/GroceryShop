@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Checkout & Payment - GroceryShop{% endblock %}
+{% block title %}Checkout & Payment - Instacart{% endblock %}
 
 {% block extra_css %}
 <!-- RazorPay Checkout Script -->
@@ -163,7 +163,7 @@
                 key: RAZORPAY_KEY_ID, // Corrected from empty string
                 amount: amount,
                 currency: "INR",
-                name: "GroceryShop",
+                name: "Instacart",
                 description: "Groceries Purchase",
                 order_id: data.order_id,
                 handler: function (response) {

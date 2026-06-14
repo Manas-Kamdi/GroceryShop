@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}GroceryShop - Fresh Groceries Delivered{% endblock %}
+{% block title %}Instacart - Fresh Groceries Delivered{% endblock %}
 
 {% block content %}
 <!-- Welcome Alert banner if logged in / redirected -->
@@ -16,63 +16,164 @@
 
 <!-- Premium Hero Section -->
 <section class="hero-section">
-    <div class="hero-content container">
-        <h1 class="hero-title">Fresh Groceries,<br>Delivered to Your Door</h1>
-        <p class="hero-subtitle">Shop for the freshest fruits, vegetables, dairy, and pantry essentials from the comfort of your home. Quality guaranteed, convenience delivered daily.</p>
+    <div class="hero-banner-card container">
+        <h1 class="hero-title">Nourish your home with <span class="text-app-orange">Earth's finest</span></h1>
+        <p class="hero-subtitle">Fresh, organic groceries and everyday essentials delivered straight to your door. Best rates, quality guaranteed.</p>
         <div class="hero-cta">
-            <a href="{% url 'products' %}" class="btn btn-primary btn-lg">Shop Now <i class="fa-solid fa-arrow-right"></i></a>
-            {% if not user.is_authenticated %}
-            <a href="{% url 'signup' %}" class="btn btn-outline btn-lg">Get Started</a>
-            {% else %}
-            <a href="{% url 'dashboard' %}" class="btn btn-outline btn-lg">Go to Dashboard</a>
-            {% endif %}
+            <a href="{% url 'products' %}" class="btn btn-primary btn-lg" style="background-color: var(--brand-accent); border-color: var(--brand-accent); border-radius: var(--border-radius-sm);">Shop Now <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="{% url 'about' %}" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: #ffffff; border-radius: var(--border-radius-sm);">Learn More</a>
         </div>
     </div>
 </section>
 
-<!-- Featured Products Section -->
+<!-- USPs Bar -->
+<div class="container" style="margin-top: -24px;">
+    <div class="usp-section-card">
+        <div class="usp-grid">
+            <div class="usp-card">
+                <div class="usp-icon"><i class="fa-solid fa-truck"></i></div>
+                <div class="usp-info">
+                    <h4>Free Delivery</h4>
+                    <p>On orders above ₹499</p>
+                </div>
+            </div>
+            <div class="usp-card">
+                <div class="usp-icon"><i class="fa-solid fa-seedling"></i></div>
+                <div class="usp-info">
+                    <h4>100% Organic</h4>
+                    <p>Fresh from local farms</p>
+                </div>
+            </div>
+            <div class="usp-card">
+                <div class="usp-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="usp-info">
+                    <h4>Secured Payment</h4>
+                    <p>Safe & secure checkout</p>
+                </div>
+            </div>
+            <div class="usp-card">
+                <div class="usp-icon"><i class="fa-solid fa-headset"></i></div>
+                <div class="usp-info">
+                    <h4>Quick Support</h4>
+                    <p>24/7 dedicated help</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Browse Categories -->
+<section class="container categories-container">
+    <div class="section-header-row">
+        <div class="section-title-wrapper">
+            <h2 class="section-title" style="font-family: 'DM Serif Display', sans-serif;">Browse Categories</h2>
+            <p class="section-subtitle">Choose from our wide variety of fresh categories</p>
+        </div>
+    </div>
+    <div class="categories-grid">
+        <a href="{% url 'products' %}?category=Fruits & Vegetables" class="category-card">
+            <div class="category-img-wrapper">🍎</div>
+            <span>Fruits & Veggies</span>
+        </a>
+        <a href="{% url 'products' %}?category=Bakery" class="category-card">
+            <div class="category-img-wrapper">🍞</div>
+            <span>Bakery & Bread</span>
+        </a>
+        <a href="{% url 'products' %}?category=Dairy & Eggs" class="category-card">
+            <div class="category-img-wrapper">🥚</div>
+            <span>Dairy & Eggs</span>
+        </a>
+        <a href="{% url 'products' %}?category=Beverages" class="category-card">
+            <div class="category-img-wrapper">🥤</div>
+            <span>Beverages</span>
+        </a>
+        <a href="{% url 'products' %}?category=Snacks" class="category-card">
+            <div class="category-img-wrapper">🍟</div>
+            <span>Tasty Snacks</span>
+        </a>
+        <a href="{% url 'products' %}?category=Meat & Seafood" class="category-card">
+            <div class="category-img-wrapper">🍗</div>
+            <span>Meat & Fish</span>
+        </a>
+        <a href="{% url 'products' %}?category=Pantry" class="category-card">
+            <div class="category-img-wrapper">🥫</div>
+            <span>Pantry Food</span>
+        </a>
+        <a href="{% url 'products' %}?category=Frozen" class="category-card">
+            <div class="category-img-wrapper">🍦</div>
+            <span>Frozen Items</span>
+        </a>
+        <a href="{% url 'products' %}?category=Household" class="category-card">
+            <div class="category-img-wrapper">🧹</div>
+            <span>Household</span>
+        </a>
+    </div>
+</section>
+
+<!-- Popular Products Section -->
 {% if products %}
 <section class="container mt-4 mb-4">
-    <div class="section-header">
-        <h2 class="section-title">Featured Products</h2>
-        <p class="section-subtitle">Grab our freshest arrivals handpicked just for you.</p>
+    <div class="section-header-row">
+        <div class="section-title-wrapper">
+            <h2 class="section-title" style="font-family: 'DM Serif Display', sans-serif;">Popular Products</h2>
+            <p class="section-subtitle">Grab our freshest arrivals handpicked just for you.</p>
+        </div>
+        <a href="{% url 'products' %}" class="btn-link">See all <i class="fa-solid fa-chevron-right"></i></a>
     </div>
     
     {% csrf_token %}
     <div class="products-grid">
         {% for product in products %}
         <div class="product-card">
+            <span class="product-discount-badge">{% if product.id|divisibleby:3 %}-15%{% else %}-10%{% endif %}</span>
             <div class="product-image-container">
-                {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
-                <img src="{% static 'Assets/product-placeholder.png' %}" alt="Placeholder" class="product-image">
-                {% endif %}
-                
-                {% if product.category %}
-                <span class="product-category-tag">{{ product.category }}</span>
-                {% endif %}
+                <a href="/products/{{ product.id }}/">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                    <img src="{% static 'Assets/product-placeholder.png' %}" alt="Placeholder" class="product-image">
+                    {% endif %}
+                </a>
             </div>
             
             <div class="product-info">
-                <h3 class="product-name">{{ product.name }}</h3>
-                {% if product.description %}
-                <p class="product-description">{{ product.description|truncatewords:12 }}</p>
-                {% endif %}
+                <h3 class="product-name">
+                    <a href="/products/{{ product.id }}/" style="color: inherit;">{{ product.name }}</a>
+                </h3>
+                
+                <!-- Extracting unit (e.g., 200g, 1.5L) dynamically from name or description -->
+                <div class="product-unit-info">
+                    {% if "g" in product.name or "g" in product.description %}
+                        1 unit
+                    {% elif "L" in product.name or "L" in product.description %}
+                        1.5L
+                    {% else %}
+                        1 unit
+                    {% endif %}
+                </div>
+                
+                <div class="product-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                    <span>4.5 (87)</span>
+                </div>
                 
                 <div class="product-footer">
                     <span class="product-price">₹{{ product.price }}</span>
                     {% if user.is_authenticated %}
                         {% if product.stock_quantity > 0 %}
-                        <button class="btn btn-primary btn-sm" onclick="addToCart(event, {{ product.id }})">
-                            <i class="fa-solid fa-cart-plus"></i> Add
+                        <button class="btn-add-circle" onclick="addToCart(event, {{ product.id }})" aria-label="Add to cart">
+                            <i class="fa-solid fa-plus"></i>
                         </button>
                         {% else %}
-                        <button class="btn btn-secondary btn-sm" disabled>Out of Stock</button>
+                        <button class="btn btn-secondary btn-sm" disabled style="border-radius: var(--border-radius-sm);">Out</button>
                         {% endif %}
                     {% else %}
-                        <button class="btn btn-primary btn-sm" onclick="showLoginAlert()">
-                            <i class="fa-solid fa-cart-plus"></i> Add
+                        <button class="btn-add-circle" onclick="showLoginAlert()" aria-label="Add to cart">
+                            <i class="fa-solid fa-plus"></i>
                         </button>
                     {% endif %}
                 </div>
@@ -80,110 +181,33 @@
         </div>
         {% endfor %}
     </div>
-    
-    <div class="text-center mt-4">
-        <a href="{% url 'products' %}" class="btn btn-outline">View All Products <i class="fa-solid fa-chevron-right"></i></a>
-    </div>
 </section>
 {% endif %}
 
-<!-- Features / Why Choose Section -->
-<section style="background-color: #ffffff; padding: 80px 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Why Choose GroceryShop?</h2>
-            <p class="section-subtitle">We're committed to bringing you the best grocery shopping experience with quality products and exceptional service.</p>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px;">
-            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 32px 24px;">
-                <div style="font-size: 3rem; margin-bottom: 16px; color: var(--brand-accent);">🥬</div>
-                <h3 style="margin-bottom: 12px; font-size: 1.35rem;">Fresh Products</h3>
-                <p>We source the freshest fruits, vegetables, and groceries directly from trusted suppliers to ensure quality in every single order.</p>
-            </div>
-            
-            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 32px 24px;">
-                <div style="font-size: 3rem; margin-bottom: 16px; color: var(--brand-accent);">🚚</div>
-                <h3 style="margin-bottom: 12px; font-size: 1.35rem;">Fast Delivery</h3>
-                <p>Quick and reliable delivery service straight to your doorstep. Order today and get your items delivered within hours.</p>
-            </div>
-            
-            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 32px 24px;">
-                <div style="font-size: 3rem; margin-bottom: 16px; color: var(--brand-accent);">💰</div>
-                <h3 style="margin-bottom: 12px; font-size: 1.35rem;">Best Prices</h3>
-                <p>Competitive and transparent pricing on all categories. Save money while getting quality groceries delivered to your home.</p>
-            </div>
-            
-            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 32px 24px;">
-                <div style="font-size: 3rem; margin-bottom: 16px; color: var(--brand-accent);">🛡️</div>
-                <h3 style="margin-bottom: 12px; font-size: 1.35rem;">Quality Guarantee</h3>
-                <p>100% satisfaction guarantee. If you're not fully happy with any item in your order, we'll replace or refund it immediately.</p>
-            </div>
-            
-            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 32px 24px;">
-                <div style="font-size: 3rem; margin-bottom: 16px; color: var(--brand-accent);">📱</div>
-                <h3 style="margin-bottom: 12px; font-size: 1.35rem;">Easy Shopping</h3>
-                <p>Simple and intuitive online shopping experience. Browse, select, and order your groceries in minutes with zero hassle.</p>
-            </div>
-            
-            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 32px 24px;">
-                <div style="font-size: 3rem; margin-bottom: 16px; color: var(--brand-accent);">🌱</div>
-                <h3 style="margin-bottom: 12px; font-size: 1.35rem;">Organic Options</h3>
-                <p>We supply a wide selection of organic, local, and chemical-free products tailored for health-conscious customers.</p>
+<!-- Promo Truck Banner -->
+<section class="container">
+    <div class="promo-truck-card">
+        <div class="promo-truck-info">
+            <h2>Get fresh groceries in minutes</h2>
+            <p>Your favorite local items delivered straight to your door with fast, contact-free courier service.</p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <a href="{% url 'products' %}" class="btn btn-primary btn-md" style="background-color: var(--brand-accent); border-color: var(--brand-accent); border-radius: var(--border-radius-full); padding: 12px 24px;">Shop Now</a>
+                <a href="{% url 'about' %}" class="btn btn-outline btn-md" style="color: #ffffff; border-color: #ffffff; border-radius: var(--border-radius-full); padding: 12px 24px;">See Locations</a>
             </div>
         </div>
+        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600" alt="Truck delivery" class="promo-truck-image" style="border-radius: var(--border-radius-md); object-fit: cover; height: 200px;">
     </div>
 </section>
 
-<!-- Stats Section -->
-<section style="background-color: var(--brand-primary); color: white; padding: 60px 0;">
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card" style="background: none; border: none; box-shadow: none; cursor: default;">
-                <div class="stat-card-icon" style="background-color: rgba(255,255,255,0.1); color: white;"><i class="fa-solid fa-users"></i></div>
-                <div class="stat-card-info">
-                    <div class="stat-card-num" style="color: white; font-size: 1.8rem;">1000+</div>
-                    <div class="stat-card-label" style="color: rgba(255,255,255,0.7);">Happy Customers</div>
-                </div>
-            </div>
-            
-            <div class="stat-card" style="background: none; border: none; box-shadow: none; cursor: default;">
-                <div class="stat-card-icon" style="background-color: rgba(255,255,255,0.1); color: white;"><i class="fa-solid fa-basket-shopping"></i></div>
-                <div class="stat-card-info">
-                    <div class="stat-card-num" style="color: white; font-size: 1.8rem;">500+</div>
-                    <div class="stat-card-label" style="color: rgba(255,255,255,0.7);">Products Available</div>
-                </div>
-            </div>
-            
-            <div class="stat-card" style="background: none; border: none; box-shadow: none; cursor: default;">
-                <div class="stat-card-icon" style="background-color: rgba(255,255,255,0.1); color: white;"><i class="fa-solid fa-headset"></i></div>
-                <div class="stat-card-info">
-                    <div class="stat-card-num" style="color: white; font-size: 1.8rem;">24/7</div>
-                    <div class="stat-card-label" style="color: rgba(255,255,255,0.7);">Support</div>
-                </div>
-            </div>
-            
-            <div class="stat-card" style="background: none; border: none; box-shadow: none; cursor: default;">
-                <div class="stat-card-icon" style="background-color: rgba(255,255,255,0.1); color: white;"><i class="fa-solid fa-star"></i></div>
-                <div class="stat-card-info">
-                    <div class="stat-card-num" style="color: white; font-size: 1.8rem;">99%</div>
-                    <div class="stat-card-label" style="color: rgba(255,255,255,0.7);">Satisfaction Rate</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action Section -->
-<section style="padding: 80px 0; text-align: center;" class="container">
-    <div class="card" style="background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%); border: 1px dashed var(--brand-accent);">
-        <h2 class="section-title">Ready to Start Shopping?</h2>
-        <p style="max-width: 600px; margin: 0 auto 32px auto;" class="section-subtitle">Join thousands of families who trust GroceryShop for their daily essentials. Get fresh products at unmatched rates today.</p>
-        <div class="hero-cta">
-            <a href="{% url 'products' %}" class="btn btn-primary btn-lg">Browse Products <i class="fa-solid fa-cart-shopping"></i></a>
-            {% if not user.is_authenticated %}
-            <a href="{% url 'signup' %}" class="btn btn-outline btn-lg">Create An Account</a>
-            {% endif %}
+<!-- Newsletter Section -->
+<section class="container">
+    <div class="newsletter-card">
+        <div style="font-size: 2.5rem; margin-bottom: 12px;">✉️</div>
+        <h2 style="font-family: 'DM Serif Display', sans-serif; font-size: 1.85rem; color: var(--text-main); margin-bottom: 8px;">Subscribe to our Newsletter</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Join weekly updates and discount codes directly in your inbox.</p>
+        <div class="newsletter-input-group">
+            <input type="email" placeholder="Enter your email address" class="form-control">
+            <button class="btn btn-primary" onclick="showToast('Thank you for subscribing! 📧', 'success')">Subscribe</button>
         </div>
     </div>
 </section>
@@ -196,7 +220,7 @@
         const originalHtml = button.innerHTML;
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size: 0.8rem;"></i>';
         button.disabled = true;
 
         fetch('{% url "add_to_cart" %}', {
@@ -211,19 +235,10 @@
         .then(data => {
             if (data.success) {
                 showToast('Product added to cart! 🛒', 'success');
-                // Optional: Update cart counter in navbar if it exists
-                const badge = document.querySelector('.cart-badge');
-                if (badge) {
-                    badge.textContent = parseInt(badge.textContent || 0) + 1;
-                } else {
-                    const cartBtn = document.querySelector('.nav-cart-btn');
-                    if (cartBtn) {
-                        const newBadge = document.createElement('span');
-                        newBadge.className = 'cart-badge';
-                        newBadge.textContent = '1';
-                        cartBtn.appendChild(newBadge);
-                    }
-                }
+                // Reload page to refresh cart drawer and badge
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
                 showToast(data.error || 'Failed to add product', 'error');
             }
@@ -240,41 +255,6 @@
         setTimeout(() => {
             window.location.href = '{% url "login" %}';
         }, 1800);
-    }
-    
-    // Toast helper for immediate alerts without page reload
-    function showToast(message, type = 'info') {
-        const container = document.querySelector('.messages-container') || document.createElement('div');
-        if (!container.className) {
-            container.className = 'messages-container';
-            document.body.appendChild(container);
-        }
-        
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type}`;
-        
-        const icons = {
-            success: '<i class="fa-solid fa-circle-check"></i>',
-            error: '<i class="fa-solid fa-circle-exclamation"></i>',
-            warning: '<i class="fa-solid fa-triangle-exclamation"></i>',
-            info: '<i class="fa-solid fa-circle-info"></i>'
-        };
-        
-        alert.innerHTML = `
-            <span class="alert-icon">${icons[type] || icons.info}</span>
-            <span class="alert-text">${message}</span>
-            <button type="button" class="alert-close-btn" onclick="this.parentElement.remove()">&times;</button>
-        `;
-        
-        container.appendChild(alert);
-        
-        // Auto remove
-        setTimeout(() => {
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-20px)';
-            alert.style.transition = 'all 0.5s ease';
-            setTimeout(() => alert.remove(), 500);
-        }, 5000);
     }
 </script>
 {% endblock %}

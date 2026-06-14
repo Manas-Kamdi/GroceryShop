@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}GroceryShop - Fresh Groceries Delivered{% endblock %}</title>
+    <title>{% block title %}Instacart - Fresh Groceries Delivered{% endblock %}</title>
 
     <!-- Google Fonts: Inter (body) and Outfit (headings) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,46 +24,51 @@
 </head>
 
 <body>
+    <!-- Top Promo Banner -->
+    {% block promo_banner %}
+    <div class="top-promo-banner">
+        <span>✨ Free delivery on orders above ₹499!</span>
+        <span>🚚 Fresh groceries delivered in 15 mins!</span>
+    </div>
+    {% endblock %}
+
     <!-- Global Navigation Header -->
+    {% block header %}
     <header class="global-header">
         <div class="header-container">
             <!-- Left: Logo -->
             <a href="{% url 'home' %}" class="logo">
-                <span class="logo-icon"><i class="fa-solid fa-basket-shopping"></i></span>
-                <span class="logo-text">Grocery<span>Shop</span></span>
+                <span class="logo-icon" style="color: var(--brand-accent);"><i class="fa-solid fa-carrot"></i></span>
+                <span class="logo-text" style="color: var(--brand-primary); font-family: 'DM Serif Display', sans-serif;">Instacart</span>
             </a>
 
-            <!-- Center: Navigation Links (Desktop) -->
-            <nav class="nav-menu-desktop">
-                <ul class="nav-links">
-                    <li><a href="{% url 'home' %}"
-                            class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
-                    <li><a href="{% url 'products' %}"
-                            class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}">Products</a>
-                    </li>
-                    <li><a href="{% url 'about' %}"
-                            class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
-                    {% if user.is_authenticated and user.is_staff %}
-                    <li><a href="{% url 'admin_orders' %}"
-                            class="{% if request.resolver_match.url_name == 'admin_orders' %}active{% endif %}">Admin
-                            Orders</a></li>
-                    {% endif %}
-                    {% if user.is_authenticated and user.userprofile.is_delivery_boy %}
-                    <li><a href="{% url 'delivery_dashboard' %}"
-                            class="{% if request.resolver_match.url_name == 'delivery_dashboard' %}active{% endif %}">Delivery Dashboard</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
+            <!-- Center Search Bar (cloned design) -->
+            <div class="search-input-wrapper" style="position: relative; max-width: 340px; width: 100%; display: flex; align-items: center;">
+                <form action="{% url 'products' %}" method="GET" style="width: 100%; margin: 0;">
+                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem;"></i>
+                    <input type="text" name="search" placeholder="Search products..." value="{{ request.GET.search|default:'' }}" class="form-control" style="border-radius: 9999px; padding-left: 42px; background-color: #faf7f2; border: 1px solid var(--border-color); font-size: 0.85rem; height: 38px; width: 100%; outline: none; transition: border-color 0.2s;">
+                </form>
+            </div>
 
             <!-- Right: Actions and mobile toggles -->
             <div class="nav-actions">
-                <a href="{% url 'cart' %}"
-                    class="nav-cart-btn {% if request.resolver_match.url_name == 'cart' %}active{% endif %}"
-                    aria-label="Cart">
+                <!-- Center: Navigation Links (Desktop) -->
+                <nav class="nav-menu-desktop" style="margin-right: 16px;">
+                    <ul class="nav-links" style="display: flex; gap: 8px; margin: 0; padding: 0; list-style: none;">
+                        <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+                        <li><a href="{% url 'products' %}" class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}">Products</a></li>
+                        <li><a href="{% url 'deals' %}" class="{% if request.resolver_match.url_name == 'deals' %}active{% endif %}" style="color: var(--brand-accent) !important; font-weight: 700;">Deals</a></li>
+                        {% if user.is_authenticated and user.is_staff %}
+                        <li><a href="{% url 'admin_orders' %}" class="{% if request.resolver_match.url_name == 'admin_orders' %}active{% endif %}">Admin</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+
+                <a href="#" onclick="openCartDrawer(event)" class="nav-cart-btn" aria-label="Cart" style="border-radius: 9999px;">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span class="cart-label">Cart</span>
-                    {% if user.is_authenticated and user.cart.cartitem_set.count %}
-                    <span class="cart-badge">{{ user.cart.cartitem_set.count }}</span>
+                    {% if user.is_authenticated and global_cart_total_items %}
+                    <span class="cart-badge">{{ global_cart_total_items }}</span>
                     {% endif %}
                 </a>
 
@@ -86,8 +91,7 @@
                         <li><a href="{% url 'delivery_dashboard' %}"><i class="fa-solid fa-truck-ramp-box"></i> Delivery Dashboard</a></li>
                         {% endif %}
                         <li class="divider"></li>
-                        <li><a href="{% url 'logout' %}" class="logout-link"><i
-                                    class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                        <li><a href="{% url 'logout' %}" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
                     </ul>
                 </div>
                 {% else %}
@@ -106,28 +110,93 @@
         <!-- Mobile Drawer Navigation Menu -->
         <nav class="nav-menu-mobile" id="navMenuMobile">
             <ul class="nav-links-mobile">
-                <li><a href="{% url 'home' %}"
-                        class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i
-                            class="fa-solid fa-house"></i> Home</a></li>
-                <li><a href="{% url 'products' %}"
-                        class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}"><i
-                            class="fa-solid fa-basket-shopping"></i> Products</a></li>
-                <li><a href="{% url 'about' %}"
-                        class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}"><i
-                            class="fa-solid fa-circle-info"></i> About</a></li>
+                <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="{% url 'products' %}" class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}"><i class="fa-solid fa-basket-shopping"></i> Products</a></li>
+                <li><a href="{% url 'deals' %}" class="{% if request.resolver_match.url_name == 'deals' %}active{% endif %}"><i class="fa-solid fa-tags"></i> Deals</a></li>
                 {% if user.is_authenticated and user.is_staff %}
-                <li><a href="{% url 'admin_orders' %}"
-                        class="{% if request.resolver_match.url_name == 'admin_orders' %}active{% endif %}"><i
-                            class="fa-solid fa-screwdriver-wrench"></i> Admin Orders</a></li>
+                <li><a href="{% url 'admin_orders' %}" class="{% if request.resolver_match.url_name == 'admin_orders' %}active{% endif %}"><i class="fa-solid fa-screwdriver-wrench"></i> Admin Orders</a></li>
                 {% endif %}
                 {% if user.is_authenticated and user.userprofile.is_delivery_boy %}
-                <li><a href="{% url 'delivery_dashboard' %}"
-                        class="{% if request.resolver_match.url_name == 'delivery_dashboard' %}active{% endif %}"><i
-                            class="fa-solid fa-truck-ramp-box"></i> Delivery Dashboard</a></li>
+                <li><a href="{% url 'delivery_dashboard' %}" class="{% if request.resolver_match.url_name == 'delivery_dashboard' %}active{% endif %}"><i class="fa-solid fa-truck-ramp-box"></i> Delivery Dashboard</a></li>
                 {% endif %}
             </ul>
         </nav>
     </header>
+    {% endblock %}
+
+    <!-- Cart Drawer Backdrop -->
+    <div class="cart-drawer-backdrop" id="cartDrawerBackdrop" onclick="closeCartDrawer()"></div>
+
+    <!-- Cart Drawer Container -->
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-drawer-header">
+            <div class="cart-drawer-header-left">
+                <i class="fa-solid fa-bag-shopping" style="color: var(--brand-primary); font-size: 1.2rem;"></i>
+                <h3>Your Cart</h3>
+                <span class="cart-drawer-count" id="cartDrawerCount">{{ global_cart_total_items }}</span>
+            </div>
+            <button class="btn-close-drawer" onclick="closeCartDrawer()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div class="cart-drawer-body" id="cartDrawerBody">
+            {% if global_cart_items %}
+                {% for item in global_cart_items %}
+                <div class="cart-drawer-item" id="drawer-item-{{ item.id }}">
+                    {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-drawer-item-img">
+                    {% else %}
+                    <img src="{% static 'Assets/product-placeholder.png' %}" alt="Placeholder" class="cart-drawer-item-img">
+                    {% endif %}
+                    <div class="cart-drawer-item-info">
+                        <div>
+                            <div class="cart-drawer-item-title">{{ item.product.name }}</div>
+                            <div class="cart-drawer-item-price">₹{{ item.product.price }}</div>
+                        </div>
+                        <div class="cart-drawer-item-actions">
+                            <div class="cart-drawer-qty-stepper">
+                                <button class="cart-drawer-qty-btn" onclick="updateDrawerQty({{ item.id }}, {{ item.quantity|add:'-1' }})"><i class="fa-solid fa-minus"></i></button>
+                                <span class="cart-drawer-qty-val">{{ item.quantity }}</span>
+                                <button class="cart-drawer-qty-btn" onclick="updateDrawerQty({{ item.id }}, {{ item.quantity|add:'1' }})"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <span class="cart-drawer-item-subtotal">₹{{ item.total_price }}</span>
+                            <button class="btn-delete-drawer-item" onclick="removeDrawerItem({{ item.id }})">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="cart-drawer-empty">
+                    <div class="cart-drawer-empty-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                    <p>Your cart is empty</p>
+                    <a href="{% url 'products' %}" class="btn btn-primary btn-sm" style="margin-top: 12px;" onclick="closeCartDrawer()">Shop Now</a>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if global_cart_items %}
+        <div class="cart-drawer-footer" id="cartDrawerFooter">
+            <div class="cart-drawer-row">
+                <span>Subtotal</span>
+                <span id="drawerSubtotal">₹{{ global_cart_total_price }}</span>
+            </div>
+            <div class="cart-drawer-row">
+                <span>Delivery</span>
+                <span style="color: #22c55e; font-weight: 700;">FREE</span>
+            </div>
+            <div class="cart-drawer-row total">
+                <span>Total</span>
+                <span id="drawerTotal">₹{{ global_cart_total_price }}</span>
+            </div>
+            <a href="{% url 'payment' %}" class="btn-drawer-checkout">
+                Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
 
     <!-- Global Messages Container -->
     {% if messages %}
@@ -158,12 +227,13 @@
     </main>
 
     <!-- Global Footer -->
+    {% block footer %}
     <footer class="global-footer">
         <div class="footer-container">
             <div class="footer-brand">
                 <a href="{% url 'home' %}" class="logo">
-                    <span class="logo-icon"><i class="fa-solid fa-basket-shopping"></i></span>
-                    <span class="logo-text">Grocery<span>Shop</span></span>
+                    <span class="logo-icon" style="color: var(--brand-accent);"><i class="fa-solid fa-carrot"></i></span>
+                    <span class="logo-text" style="color: var(--brand-primary); font-family: 'DM Serif Display', sans-serif;">Instacart</span>
                 </a>
                 <p class="footer-desc">Your friendly neighborhood online store. Sourcing only the freshest, high-quality
                     groceries directly to your doorstep. Satisfying families daily.</p>
@@ -197,20 +267,126 @@
                 <h3>Contact Info</h3>
                 <p><i class="fa-solid fa-location-dot"></i> 123 Grocery Lane, Fresh City</p>
                 <p><i class="fa-solid fa-phone"></i> +91 7387029875</p>
-                <p><i class="fa-solid fa-envelope"></i> groceryshop@gmail.com</p>
+                <p><i class="fa-solid fa-envelope"></i> support@instacart.local</p>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; {% now "Y" %} GroceryShop. All rights reserved. Designed with ❤️ for a fresh experience.</p>
+            <p>&copy; {% now "Y" %} Instacart. All rights reserved. Designed with ❤️ for a fresh experience.</p>
         </div>
     </footer>
+    {% endblock %}
 
     <!-- Custom Dialog JS -->
     <script src="{% static 'js/dialog.js' %}"></script>
 
     <!-- Global Scripts -->
     <script>
+        // Drawer toggle functions
+        function openCartDrawer(e) {
+            if (e) e.preventDefault();
+            
+            {% if not user.is_authenticated %}
+                showToast('Please log in to view your cart.', 'warning');
+                setTimeout(() => {
+                    window.location.href = "{% url 'login' %}";
+                }, 1500);
+                return;
+            {% endif %}
+
+            document.getElementById('cartDrawer').classList.add('open');
+            document.getElementById('cartDrawerBackdrop').classList.add('open');
+        }
+
+        function closeCartDrawer() {
+            document.getElementById('cartDrawer').classList.remove('open');
+            document.getElementById('cartDrawerBackdrop').classList.remove('open');
+        }
+
+        // AJAX update quantity inside drawer
+        function updateDrawerQty(itemId, newQty) {
+            if (newQty <= 0) {
+                removeDrawerItem(itemId);
+                return;
+            }
+            
+            const csrfToken = '{{ csrf_token }}';
+            
+            fetch("{% url 'update_cart_item' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: `item_id=${itemId}&quantity=${newQty}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    showToast(data.error || 'Failed to update cart', 'error');
+                }
+            })
+            .catch(() => showToast('Network error, please try again', 'error'));
+        }
+
+        function removeDrawerItem(itemId) {
+            const csrfToken = '{{ csrf_token }}';
+            
+            fetch("{% url 'remove_from_cart' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: `item_id=${itemId}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    showToast(data.error || 'Failed to remove item', 'error');
+                }
+            })
+            .catch(() => showToast('Network error, please try again', 'error'));
+        }
+
+        // Toast helper for immediate alerts
+        function showToast(message, type = 'info') {
+            const container = document.querySelector('.messages-container') || document.createElement('div');
+            if (!container.className) {
+                container.className = 'messages-container';
+                document.body.appendChild(container);
+            }
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            
+            const icons = {
+                success: '<i class="fa-solid fa-circle-check"></i>',
+                error: '<i class="fa-solid fa-circle-exclamation"></i>',
+                warning: '<i class="fa-solid fa-triangle-exclamation"></i>',
+                info: '<i class="fa-solid fa-circle-info"></i>'
+            };
+            
+            alert.innerHTML = `
+                <span class="alert-icon">${icons[type] || icons.info}</span>
+                <span class="alert-text">${message}</span>
+                <button type="button" class="alert-close-btn" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-20px)';
+                alert.style.transition = 'all 0.5s ease';
+                setTimeout(() => alert.remove(), 500);
+            }, 5000);
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             // Mobile menu toggle
             const menuToggle = document.getElementById('menuToggle');

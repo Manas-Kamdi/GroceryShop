@@ -1,212 +1,141 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Products - GroceryShop{% endblock %}
+{% block title %}Products - Instacart{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-4">
-    <!-- Header -->
-    <div class="section-header">
-        <h1 class="section-title">Our Products</h1>
-        <p class="section-subtitle">Browse through our wide range of fresh groceries sourced directly for you</p>
-    </div>
-
-    {% if products %}
-    {% csrf_token %}
-    
-    <!-- Sleek Filter Bar -->
-    <div class="filters-container">
-        <div class="unified-search-bar">
-            <div class="search-category-wrapper">
-                <div class="custom-dropdown" id="category-dropdown-wrapper">
-                    <button class="custom-dropdown-trigger" type="button" id="category-dropdown-trigger">
-                        <span class="custom-dropdown-value">All Categories</span>
-                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                    </button>
-                    <ul class="custom-dropdown-menu" id="category-dropdown-menu">
-                        <li class="custom-dropdown-item active" data-value="">All Categories</li>
-                        {% for category in categories %}
-                        <li class="custom-dropdown-item" data-value="{{ category }}">{{ category }}</li>
-                        {% endfor %}
-                    </ul>
-                    <!-- Keep the original select hidden so that we don't break JS filter listener -->
-                    <select id="category-filter" style="display: none;">
-                        <option value="">All Categories</option>
-                        {% for category in categories %}
-                        <option value="{{ category }}">{{ category }}</option>
-                        {% endfor %}
-                    </select>
+<div class="container mt-4 mb-5">
+    <div class="products-layout-wrapper">
+        <!-- Sidebar Filters -->
+        <aside class="products-sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Categories</h3>
+                <div class="sidebar-categories-list">
+                    <a href="?category=" class="sidebar-category-link {% if not request.GET.category %}active{% endif %}">
+                        <span>All Categories</span>
+                    </a>
+                    {% for category in categories %}
+                    <a href="?category={{ category }}" class="sidebar-category-link {% if request.GET.category == category %}active{% endif %}">
+                        <span>{{ category }}</span>
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
             
-            <div class="search-separator"></div>
-            
-            <div class="search-input-wrapper">
-                <input type="text" id="search" class="search-input-field" placeholder="Search products...">
-            </div>
-            
-            <button class="search-action-btn" type="button" aria-label="Search" onclick="document.getElementById('search').focus()">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </div>
-        
-        {% if user.is_authenticated and user.is_staff %}
-        <a href="{% url 'add_product' %}" class="btn btn-primary add-product-btn">
-            <i class="fa-solid fa-plus"></i> Add Product
-        </a>
-        {% endif %}
-    </div>
-
-    <!-- Products Grid -->
-    <div class="products-grid" id="products-grid">
-        {% for product in products %}
-        <div class="product-card" data-category="{{ product.category|default:'' }}" data-name="{{ product.name|lower }}">
-            <div class="product-image-container">
-                {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
-                <img src="{% static 'Assets/product-placeholder.png' %}" alt="{{ product.name }}" class="product-image">
-                {% endif %}
-                
-                {% if product.category %}
-                <span class="product-category-tag">{{ product.category }}</span>
-                {% endif %}
-            </div>
-
-            <div class="product-info">
-                <h3 class="product-name">{{ product.name }}</h3>
-                {% if product.description %}
-                <p class="product-description">{{ product.description|truncatewords:15 }}</p>
-                {% endif %}
-                
-                <div class="product-footer">
-                    <span class="product-price">₹{{ product.price }}</span>
-                    {% if user.is_authenticated %}
-                        {% if product.stock_quantity > 0 %}
-                        <button class="btn btn-primary btn-sm" onclick="addToCart(event, {{ product.id }})">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                        </button>
-                        {% else %}
-                        <button class="btn btn-secondary btn-sm" disabled>Out of Stock</button>
-                        {% endif %}
-                    {% else %}
-                        <button class="btn btn-primary btn-sm" onclick="showLoginAlert()">
-                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                        </button>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Price Range</h3>
+                <form method="GET" action="">
+                    {% if request.GET.category %}
+                    <input type="hidden" name="category" value="{{ request.GET.category }}">
                     {% endif %}
-                </div>
+                    {% if request.GET.search %}
+                    <input type="hidden" name="search" value="{{ request.GET.search }}">
+                    {% endif %}
+                    <div class="sidebar-price-range">
+                        <input type="number" name="min_price" placeholder="Min" value="{{ request.GET.min_price|default:'' }}" class="sidebar-price-input">
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">to</span>
+                        <input type="number" name="max_price" placeholder="Max" value="{{ request.GET.max_price|default:'' }}" class="sidebar-price-input">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-apply-filters">Apply Filters</button>
+                </form>
             </div>
+        </aside>
+
+        <!-- Main Products Side -->
+        <div>
+            <!-- Header -->
+            <div class="section-header-row" style="margin-bottom: 24px;">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title" style="font-family: 'DM Serif Display', sans-serif;">All Products</h2>
+                    <p class="section-subtitle">Browse through our wide range of fresh organic groceries</p>
+                </div>
+                {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'add_product' %}" class="btn btn-primary add-product-btn" style="position: static; border-radius: var(--border-radius-sm);">
+                    <i class="fa-solid fa-plus"></i> Add Product
+                </a>
+                {% endif %}
+            </div>
+
+            {% if products %}
+            {% csrf_token %}
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <span class="product-discount-badge">{% if product.id|divisibleby:3 %}-15%{% else %}-10%{% endif %}</span>
+                    <div class="product-image-container">
+                        <a href="/products/{{ product.id }}/">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                            {% else %}
+                            <img src="{% static 'Assets/product-placeholder.png' %}" alt="Placeholder" class="product-image">
+                            {% endif %}
+                        </a>
+                    </div>
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">
+                            <a href="/products/{{ product.id }}/" style="color: inherit;">{{ product.name }}</a>
+                        </h3>
+                        
+                        <div class="product-unit-info">
+                            {% if "g" in product.name or "g" in product.description %}
+                                1 unit
+                            {% elif "L" in product.name or "L" in product.description %}
+                                1.5L
+                            {% else %}
+                                1 unit
+                            {% endif %}
+                        </div>
+                        
+                        <div class="product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                            <span>4.5 (87)</span>
+                        </div>
+                        
+                        <div class="product-footer">
+                            <span class="product-price">₹{{ product.price }}</span>
+                            {% if user.is_authenticated %}
+                                {% if product.stock_quantity > 0 %}
+                                <button class="btn-add-circle" onclick="addToCart(event, {{ product.id }})" aria-label="Add to cart">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                                {% else %}
+                                <button class="btn btn-secondary btn-sm" disabled style="border-radius: var(--border-radius-sm);">Out</button>
+                                {% endif %}
+                            {% else %}
+                                <button class="btn-add-circle" onclick="showLoginAlert()" aria-label="Add to cart">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                <h2>No match found</h2>
+                <p>Try refining your search terms or selecting another category.</p>
+            </div>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
-    
-    <!-- Empty state search results fallback (hidden by default) -->
-    <div class="empty-state" id="no-search-results" style="display: none;">
-        <div class="empty-state-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-        <h2>No match found</h2>
-        <p>Try refining your search terms or selecting another category.</p>
-    </div>
-    
-    {% else %}
-    <!-- No products at all empty state -->
-    <div class="empty-state">
-        <div class="empty-state-icon"><i class="fa-solid fa-basket-shopping"></i></div>
-        <h2>No Products Available</h2>
-        <p>We are currently stocking up our digital shelves. Please check back soon!</p>
-        {% if user.is_authenticated and user.is_staff %}
-        <a href="{% url 'add_product' %}" class="btn btn-primary mt-3"><i class="fa-solid fa-plus"></i> Add First Product</a>
-        {% endif %}
-    </div>
-    {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const categoryFilter = document.getElementById('category-filter');
-        const searchInput = document.getElementById('search');
-        
-        if (categoryFilter) categoryFilter.addEventListener('change', filterProducts);
-        if (searchInput) searchInput.addEventListener('input', filterProducts);
-
-        // Custom Dropdown JS
-        const trigger = document.getElementById('category-dropdown-trigger');
-        const menu = document.getElementById('category-dropdown-menu');
-        const items = document.querySelectorAll('.custom-dropdown-item');
-        const valueSpan = trigger ? trigger.querySelector('.custom-dropdown-value') : null;
-
-        if (trigger && menu) {
-            trigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                menu.classList.toggle('show');
-                trigger.classList.toggle('active');
-            });
-
-            document.addEventListener('click', function() {
-                menu.classList.remove('show');
-                trigger.classList.remove('active');
-            });
-
-            items.forEach(item => {
-                item.addEventListener('click', function() {
-                    const val = this.dataset.value;
-                    const text = this.textContent;
-
-                    // Update hidden select
-                    if (categoryFilter) {
-                        categoryFilter.value = val;
-                        categoryFilter.dispatchEvent(new Event('change'));
-                    }
-
-                    // Update UI
-                    if (valueSpan) {
-                        valueSpan.textContent = text;
-                    }
-
-                    // Mark active item
-                    items.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-
-                    // Close menu
-                    menu.classList.remove('show');
-                    trigger.classList.remove('active');
-                });
-            });
-        }
-    });
-
-    function filterProducts() {
-        const category = document.getElementById('category-filter').value;
-        const search = document.getElementById('search').value.toLowerCase();
-        const cards = document.querySelectorAll('.product-card');
-        const noResults = document.getElementById('no-search-results');
-        
-        let visibleCount = 0;
-        
-        cards.forEach(card => {
-            const matchCategory = !category || card.dataset.category === category;
-            const matchSearch = !search || card.dataset.name.includes(search);
-            
-            if (matchCategory && matchSearch) {
-                card.style.display = 'flex';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        if (noResults) {
-            noResults.style.display = (visibleCount === 0) ? 'block' : 'none';
-        }
-    }
-
     function addToCart(event, productId) {
         const button = event.currentTarget;
         const originalHtml = button.innerHTML;
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size: 0.8rem;"></i>';
         button.disabled = true;
 
         fetch('{% url "add_to_cart" %}', {
@@ -221,19 +150,9 @@
         .then(data => {
             if (data.success) {
                 showToast('Product added to cart! 🛒', 'success');
-                // Update badge
-                const badge = document.querySelector('.cart-badge');
-                if (badge) {
-                    badge.textContent = parseInt(badge.textContent || 0) + 1;
-                } else {
-                    const cartBtn = document.querySelector('.nav-cart-btn');
-                    if (cartBtn) {
-                        const newBadge = document.createElement('span');
-                        newBadge.className = 'cart-badge';
-                        newBadge.textContent = '1';
-                        cartBtn.appendChild(newBadge);
-                    }
-                }
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
                 showToast(data.error || 'Failed to add product', 'error');
             }
@@ -248,43 +167,8 @@
     function showLoginAlert() {
         showToast('Please log in to add products to your cart.', 'warning');
         setTimeout(() => {
-            window.location.href = '{% url "login" %}?next={% url "products" %}';
+            window.location.href = '{% url "login" %}';
         }, 1800);
-    }
-
-    // Toast helper
-    function showToast(message, type = 'info') {
-        const container = document.querySelector('.messages-container') || document.createElement('div');
-        if (!container.className) {
-            container.className = 'messages-container';
-            document.body.appendChild(container);
-        }
-        
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type}`;
-        
-        const icons = {
-            success: '<i class="fa-solid fa-circle-check"></i>',
-            error: '<i class="fa-solid fa-circle-exclamation"></i>',
-            warning: '<i class="fa-solid fa-triangle-exclamation"></i>',
-            info: '<i class="fa-solid fa-circle-info"></i>'
-        };
-        
-        alert.innerHTML = `
-            <span class="alert-icon">${icons[type] || icons.info}</span>
-            <span class="alert-text">${message}</span>
-            <button type="button" class="alert-close-btn" onclick="this.parentElement.remove()">&times;</button>
-        `;
-        
-        container.appendChild(alert);
-        
-        // Auto remove
-        setTimeout(() => {
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-20px)';
-            alert.style.transition = 'all 0.5s ease';
-            setTimeout(() => alert.remove(), 500);
-        }, 5000);
     }
 </script>
 {% endblock %}
